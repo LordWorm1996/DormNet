@@ -11,6 +11,8 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 - git
 - curl
 
+------------------------------------------------------------------------------------------------------------------------------
+
 1. Clone the repository `git clone https://github.com/LordWorm1996/DormNet.git`
 2. Move into the Installer directory `cd DormNet/installer`
 3. Run `cargo build --release`
