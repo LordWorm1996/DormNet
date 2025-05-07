@@ -3,6 +3,14 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 
 ## Installation
 
+# Dependencies
+
+- npm
+- nodejs
+- rustc
+- git
+- curl
+
 1. Clone the repository `git clone https://github.com/LordWorm1996/DormNet.git`
 2. Move into the Installer directory `cd DormNet/installer`
 3. Run `cargo build --release`
@@ -10,3 +18,8 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 5. Paste your MongoDB URI that you can get from MongoDB Compass on the browser
 6. Wait for the intsallation to finish
 7. Now your DormNet will be accessible throught `http://localhost:3000` and will be running on startup as a systemd service on your Linux Container/VM 
+
+## Troubleshoot
+
+- If you're on Debian 12 or older you need to install rustup's latest version from the web because the apt cargo package is outdated `https://rustup.rs/`
+- If you're on Arch this issue 
