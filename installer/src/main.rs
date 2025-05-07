@@ -83,6 +83,6 @@ WantedBy=multi-user.target",
         "Installation complete. Service started:"
             .green()
             .to_string(),
-        service_name
+        service_name.green().to_string()
     );
 }
