@@ -22,14 +22,33 @@ fn main() {
     let mut env_file = File::create(env_path).expect("Failed to create .env file");
     writeln!(env_file, "MONGO_URI={}", mongo_uri).expect("Failed to write to .env");
 
-    println!("Installing Node.js dependencies...");
-    Command::new("npm")
+    println!(
+        "{}",
+        "Installing Node.js dependencies..."
+            .yellow()
+            .bold()
+            .to_string()
+    );
+    let install_status = Command::new("npm")
         .arg("install")
         .current_dir("../dormnet")
         .status()
-        .expect("Failed to run npm install");
+        .expect("Failed to run npm npm install");
 
-    println!("{}", "Building the Next.js app...".bold().to_string());
+    if !install_status.success() {
+        eprintln!(
+            "{}",
+            "Node.js failed to install dependencies, check you internet connection, aborting..."
+                .red()
+                .bold()
+        );
+        std::process::exit(1);
+    }
+
+    println!(
+        "{}",
+        "Building the Next.js app...".yellow().bold().to_string()
+    );
     let build_status = Command::new("npm")
         .arg("run")
         .arg("build")
@@ -38,10 +57,7 @@ fn main() {
         .expect("Failed to run npm run build");
 
     if !build_status.success() {
-        eprintln!(
-            "{}",
-            "Next.js build failed. Aborting installation.".red().bold()
-        );
+        eprintln!("{}", "Next.js build failed, aborting...".red().bold());
         std::process::exit(1);
     }
 
