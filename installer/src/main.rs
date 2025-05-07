@@ -80,7 +80,7 @@ WantedBy=multi-user.target",
 
     println!(
         "{} {}",
-        "Installation complete. Service started: "
+        "Installation complete. Service started:"
             .green()
             .to_string(),
         service_name
