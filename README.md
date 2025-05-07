@@ -3,7 +3,7 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 
 ## Installation
 
-# Dependencies
+### Dependencies
 
 - npm
 - nodejs
