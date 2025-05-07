@@ -7,7 +7,7 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 
 - npm
 - nodejs
-- rustc
+- rustc(apt)/rust(pacman)
 - git
 - curl
 
