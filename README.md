@@ -21,5 +21,5 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 
 ## Troubleshoot
 
-- If you're on Debian 12 or older you need to install rustup's latest version from the web because the apt cargo package is outdated `https://rustup.rs/`
-- If you're on Arch this issue 
+- If you're on Debian 12 or older you need to install rustup's latest version from the web because the apt cargo package is outdated `https://rustup.rs/` not tested on newer versions but if you get messages like cargo is out of date then install rustup from the web
+- If you're on Arch this issue is not revelant as they are always up to date
