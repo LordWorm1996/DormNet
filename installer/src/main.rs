@@ -38,7 +38,7 @@ fn main() {
     if !install_status.success() {
         eprintln!(
             "{}",
-            "Node.js failed to install dependencies, check you internet connection, aborting..."
+            "Node.js failed to install dependencies, aborting..."
                 .red()
                 .bold()
         );
