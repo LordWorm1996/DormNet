@@ -17,14 +17,14 @@ fn main() {
         .interact_text()
         .unwrap();
 
-    let env_path = "./dormnet/.env";
+    let env_path = "../dormnet/.env";
     let mut env_file = File::create(env_path).expect("Failed to create .env file");
     writeln!(env_file, "MONGO_URI={}", mongo_uri).expect("Failed to write to .env");
 
     println!("Installing Node.js dependencies...");
     Command::new("npm")
         .arg("install")
-        .current_dir("./dormnet")
+        .current_dir("../dormnet")
         .status()
         .expect("Failed to run npm install");
 
@@ -32,7 +32,7 @@ fn main() {
     Command::new("npm")
         .arg("run")
         .arg("build")
-        .current_dir("./dormnet")
+        .current_dir("../dormnet")
         .status()
         .expect("Failed to run npm run build");
 
@@ -54,7 +54,7 @@ EnvironmentFile={}
 [Install]
 WantedBy=multi-user.target",
         whoami::username(),
-        fs::canonicalize("./dormnet").unwrap().display(),
+        fs::canonicalize("../dormnet").unwrap().display(),
         fs::canonicalize(env_path).unwrap().display()
     );
 
