@@ -7,7 +7,8 @@ use std::process::Command;
 fn main() {
     println!(
         "{}",
-        "Welcome to the DormNet installer for your Linux Service Container"
+        "Welcome to the DormNet installer for your Linux Container"
+            .green()
             .bold()
             .to_string()
     );
@@ -29,12 +30,20 @@ fn main() {
         .expect("Failed to run npm install");
 
     println!("{}", "Building the Next.js app...".bold().to_string());
-    Command::new("npm")
+    let build_status = Command::new("npm")
         .arg("run")
         .arg("build")
         .current_dir("../dormnet")
         .status()
         .expect("Failed to run npm run build");
+
+    if !build_status.success() {
+        eprintln!(
+            "{}",
+            "Next.js build failed. Aborting installation.".red().bold()
+        );
+        std::process::exit(1);
+    }
 
     println!("{}", "Creating systemd Service...".bold().to_string());
     let service_name = "dormnet.service";
