@@ -37,7 +37,7 @@ fn main() {
         .expect("Failed to run npm run build");
 
     println!("{}", "Creating systemd Service...".bold().to_string());
-    let service_name = "nextapp.service";
+    let service_name = "dormnet.service";
     let service_content = format!(
         "[Unit]
 Description=DormNet
@@ -79,9 +79,10 @@ WantedBy=multi-user.target",
         .unwrap();
 
     println!(
-        "{}",
-        "Installation complete. Service started: {service_name}"
+        "{} {}",
+        "Installation complete. Service started: "
             .green()
-            .to_string()
+            .to_string(),
+        service_name
     );
 }
