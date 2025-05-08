@@ -1,5 +1,5 @@
 use colored::Colorize;
-use dialoguer::Input;
+use dialoguer::{Confirm, Input};
 use std::fs::{self, File};
 use std::io::Write;
 use std::process::Command;
@@ -13,10 +13,30 @@ fn main() {
             .to_string()
     );
 
-    let mongo_uri: String = Input::new()
-        .with_prompt("Please Enter your MongoDB URI: ")
-        .interact_text()
-        .unwrap();
+    let mongo_uri: String = loop {
+        let input_uri: String = Input::new()
+            .with_prompt("Please Enter your MongoDB URI: ")
+            .interact_text()
+            .unwrap();
+
+        let confirmation = Confirm::new()
+            .with_prompt(
+                format!("Is this the correct URI?: {}", input_uri)
+                    .bold()
+                    .cyan()
+                    .to_string(),
+            )
+            .interact()
+            .unwrap();
+
+        if confirmation {
+            break input_uri;
+        } else {
+            println!("{}", "Please try again...".yellow().to_string());
+        }
+    };
+
+    println!("Using URI: {}", mongo_uri.bold().green().to_string());
 
     let env_path = "../dormnet/.env";
     let mut env_file = File::create(env_path).expect("Failed to create .env file");
