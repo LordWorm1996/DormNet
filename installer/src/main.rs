@@ -82,7 +82,10 @@ fn main() {
         std::process::exit(1);
     }
 
-    println!("{}", "Creating systemd Service...".bold().to_string());
+    println!(
+        "{}",
+        "Creating systemd Service...".bold().yellow().to_string()
+    );
     let service_name = "dormnet.service";
     let service_content = format!(
         "[Unit]
@@ -126,9 +129,7 @@ WantedBy=multi-user.target",
 
     println!(
         "{} {}",
-        "Installation complete. Service started:"
-            .green()
-            .to_string(),
+        "Installation complete. Service started:",
         service_name.bold().green().to_string()
     );
 }
