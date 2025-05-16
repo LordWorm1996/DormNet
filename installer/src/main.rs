@@ -22,7 +22,7 @@ fn main() {
 
         let confirmation = Confirm::new()
             .with_prompt(
-                format!("Is this the correct URI?: {} [Y/n]", input_uri)
+                format!("Is this the correct URI?: {}", input_uri)
                     .bold()
                     .cyan()
                     .to_string(),
