@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export function DashboardPage() {
   return (
@@ -11,17 +12,6 @@ export function DashboardPage() {
       </Card>
     </main>
   );
-}
-
-const fromNode = async () => {
-  const res = await fetch("http://localhost:5000/random-quote"); //change port if different
-  return res.json();
-};
-
-export async function Main() {
-  const nodeMsg = await fromNode();
-
-  return <div>{nodeMsg.quote}</div>;
 }
 
 export default function HomePage() {
