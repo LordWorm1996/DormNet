@@ -17,6 +17,7 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "iron-session": "^8.0.4",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.479.0",
     "mongoose": "^8.13.1",
     "next": "^15.2.4",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
