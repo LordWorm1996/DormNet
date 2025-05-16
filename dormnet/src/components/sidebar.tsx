@@ -9,6 +9,7 @@ import {
     Settings,
     LogOut,
     Home,
+    Server,
 } from "lucide-react"
 import { LogoFullLink } from "@/components/ui/shared"
 
@@ -46,6 +47,11 @@ export function Sidebar() {
             name: "Settings",
             href: "/settings",
             icon: <Settings className="h-4 w-4" />,
+        },
+        {
+            name: "Admin Panel",
+            href: "/admin",
+            icon: <Server className="h-4 w-4" />,
         },
     ]
 
