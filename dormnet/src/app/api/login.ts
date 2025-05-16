@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcrypt";
+import { getSession } from "../../lib/session";
 import { connectDB } from "../../utils/db";
 import User from "../../models/User";
 
@@ -31,6 +32,13 @@ export default async function handler(
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
+
+    const session = await getSession(req, res);
+    session.user = {
+      id: user._id.toString(),
+      email: user.email,
+    };
+    await session.save();
 
     return res
       .status(200)

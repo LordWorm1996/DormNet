@@ -1,5 +1,6 @@
 use colored::Colorize;
 use dialoguer::{Confirm, Input};
+use random_string::generate;
 use std::fs::{self, File};
 use std::io::Write;
 use std::process::Command;
@@ -42,6 +43,15 @@ fn main() {
     let env_path = "../dormnet/.env";
     let mut env_file = File::create(env_path).expect("Failed to create .env file");
     writeln!(env_file, "MONGO_URI={}", mongo_uri).expect("Failed to write to .env");
+
+    println!(
+        "{}",
+        "Generating Session Password...".bold().yellow().to_string()
+    );
+    let charset = "abcdefghijklmnopqrstuvwsyz1234567890!@#$%^&*()-_=+{}[];:,.<>?";
+    let session_password: String = generate(32, charset);
+    writeln!(env_file, "SESSION_PASSWORD={}", session_password).expect("Failed to write to .env");
+    println!("{}", "Generated Successfully!".green().to_string());
 
     println!(
         "{}",
