@@ -5,6 +5,27 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::process::Command;
 
+fn cleanup_env_file() {
+    let env_path = "../dormnet/.env";
+    if fs::remove_file(env_path).is_ok() {
+        println!(
+            "{}",
+            "Cleaned up .env file due to setup failure."
+                .bold()
+                .red()
+                .to_string()
+        );
+    } else {
+        println!(
+            "{}",
+            "No .env file to remove or failed to delete."
+                .bold()
+                .red()
+                .to_string()
+        );
+    }
+}
+
 fn main() {
     println!(
         "{}",
@@ -41,8 +62,16 @@ fn main() {
     println!("Using URI: {}", mongo_uri.bold().green().to_string());
 
     let env_path = "../dormnet/.env";
-    let mut env_file = File::create(env_path).expect("Failed to create .env file");
-    writeln!(env_file, "MONGO_URI={}", mongo_uri).expect("Failed to write to .env");
+    let mut env_file = File::create(env_path).unwrap_or_else(|e| {
+        println!("Error writing to .env: {}", e);
+        cleanup_env_file();
+        std::process::exit(1);
+    });
+    writeln!(env_file, "MONGO_URI={}", mongo_uri).unwrap_or_else(|e| {
+        println!("Error writing to .env: {}", e);
+        cleanup_env_file();
+        std::process::exit(1);
+    });
 
     println!(
         "{}",
@@ -50,7 +79,11 @@ fn main() {
     );
     let charset = "abcdefghijklmnopqrstuvwsyz1234567890!@#$%^&*()-_=+{}[];:,.<>?";
     let session_password: String = generate(32, charset);
-    writeln!(env_file, "SESSION_PASSWORD={}", session_password).expect("Failed to write to .env");
+    writeln!(env_file, "SESSION_PASSWORD={}", session_password).unwrap_or_else(|e| {
+        println!("Error writing to .env: {}", e);
+        cleanup_env_file();
+        std::process::exit(1);
+    });
     println!("{}", "Generated Successfully!".green().to_string());
 
     println!(
@@ -64,7 +97,7 @@ fn main() {
         .arg("install")
         .current_dir("../dormnet")
         .status()
-        .expect("Failed to run npm npm install");
+        .expect("Failed to run npm install");
 
     if !install_status.success() {
         eprintln!(
@@ -73,6 +106,7 @@ fn main() {
                 .red()
                 .bold()
         );
+        cleanup_env_file();
         std::process::exit(1);
     }
 
@@ -89,6 +123,7 @@ fn main() {
 
     if !build_status.success() {
         eprintln!("{}", "Next.js build failed, aborting...".red().bold());
+        cleanup_env_file();
         std::process::exit(1);
     }
 
@@ -118,7 +153,11 @@ WantedBy=multi-user.target",
     );
 
     let service_path = format!("/etc/systemd/system/{}", service_name);
-    fs::write(&service_path, service_content).expect("Failed to write systemd service file");
+    fs::write(&service_path, service_content).unwrap_or_else(|e| {
+        println!("Failed to write systemd service file: {}", e);
+        cleanup_env_file();
+        std::process::exit(1);
+    });
 
     Command::new("systemctl")
         .arg("daemon-reexec")
