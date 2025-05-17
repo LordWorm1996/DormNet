@@ -15,5 +15,5 @@ export function DashboardPage() {
 }
 
 export default function HomePage() {
-  redirect("/dashboard");
+  redirect("/login");
 }
