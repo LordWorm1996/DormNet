@@ -1,72 +1,76 @@
-'use client';
+"use client";
 
-import useSWR from 'swr';
-import { useState } from 'react';
-import type { IMachine } from '@/models/Machine';
+import useSWR from "swr";
+import { useState } from "react";
+import type { IMachine } from "@/models/Machine";
 
 const fetchWithCredentials = async (url: string): Promise<IMachine[]> => {
-    const res = await fetch(url, { credentials: 'include' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json() as Promise<IMachine[]>;
+  const res = await fetch(url, { credentials: "include" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json() as Promise<IMachine[]>;
 };
 
 export default function AdminMachinesPage() {
-    const { data: machines, error, mutate } = useSWR<IMachine[]>('/api/admin/machine', fetchWithCredentials);
-    const [name, setName] = useState('');
-    const [busy, setBusy] = useState(false);
+  const {
+    data: machines,
+    error,
+    mutate,
+  } = useSWR<IMachine[]>("/api/admin/machine", fetchWithCredentials);
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
 
-    if (error) return <p className="text-red-500">Error loading machines.</p>;
-    if (!machines) return <p>Loading machines…</p>;
+  if (error) return <p className="text-red-500">Error loading machines.</p>;
+  if (!machines) return <p>Loading machines…</p>;
 
-    const addMachine = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setBusy(true);
-        try {
-            await fetch('/api/admin/machine', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name }),
-            });
-            setName('');
-            await mutate();
-        } catch (err: unknown) {
-            let msg = 'Unknown error';
-            if (err instanceof Error) msg = err.message;
-            alert('Error: ' + msg);
-        } finally {
-            setBusy(false);
-        }
-    };
+  const addMachine = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await fetch("/api/admin/machine", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      setName("");
+      await mutate();
+    } catch (err: unknown) {
+      let msg = "Unknown error";
+      if (err instanceof Error) msg = err.message;
+      alert("Error: " + msg);
+    } finally {
+      setBusy(false);
+    }
+  };
 
-    return (
-        <div>
-            <h1 className="text-2xl font-bold mb-4">Machine Management</h1>
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Machine Management</h1>
 
-            <form onSubmit={addMachine} className="mb-4 flex gap-2">
-                <input
-                    className="flex-1 p-2 border rounded"
-                    placeholder="New machine name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={busy}
-                />
-                <button
-                    type="submit"
-                    disabled={busy || !name.trim()}
-                    className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
-                >
-                    {busy ? 'Adding…' : 'Add Machine'}
-                </button>
-            </form>
+      <form onSubmit={addMachine} className="mb-4 flex gap-2">
+        <input
+          className="flex-1 p-2 border rounded"
+          placeholder="New machine name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          disabled={busy}
+        />
+        <button
+          type="submit"
+          disabled={busy || !name.trim()}
+          className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
+        >
+          {busy ? "Adding…" : "Add Machine"}
+        </button>
+      </form>
 
-            <ul className="space-y-2">
-                {machines.map((m) => (
-                    <li key={m._id} className="p-2 bg-white rounded shadow">
-                        <strong>{m.name}</strong> — {m.status}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+      <ul className="space-y-2">
+        {machines.map((m) => (
+          <li key={m._id} className="p-2 bg-white rounded shadow">
+            <strong>{m.name}</strong> — {m.status}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }

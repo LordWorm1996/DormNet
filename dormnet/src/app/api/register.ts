@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import { connectDB } from "../../utils/db";
 import User from "../../models/User";
 
-// Connect to database
 connectDB();
 
 export default async function handler(

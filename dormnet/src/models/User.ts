@@ -1,6 +1,5 @@
 import mongoose, { Document } from "mongoose";
 
-/** 1. Define a TS interface for the User document */
 export interface IUser extends Document {
   username: string;
   _id: string;
@@ -8,10 +7,9 @@ export interface IUser extends Document {
   surname: string;
   email: string;
   password: string;
-  role: string; // optional, if you add roles later
+  role: string;
 }
 
-/** 2. Define the Mongoose schema */
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true },
   name: { type: String, required: true },
@@ -22,6 +20,5 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, default: "user" },
 });
 
-/** 3. Create and export the model */
 const User = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
 export default User;
