@@ -5,9 +5,9 @@ import User from "@/models/User";
 
 export async function POST(
   req: NextRequest,
-  context: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = context.params;
+  const { id } = await params;
   const authResult = authorizeAdmin(req);
   if (authResult instanceof NextResponse) return authResult;
 
@@ -17,6 +17,7 @@ export async function POST(
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
+
   user.role = "banned";
   await user.save();
 
