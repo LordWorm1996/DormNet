@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+// import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
+/*
 export function DashboardPage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
@@ -13,6 +14,7 @@ export function DashboardPage() {
     </main>
   );
 }
+*/
 
 export default function HomePage() {
   redirect("/login");
