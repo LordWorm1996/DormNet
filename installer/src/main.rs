@@ -13,7 +13,6 @@ fn cleanup_env_file() {
             "Cleaned up .env file due to setup failure."
                 .bold()
                 .red()
-                .to_string()
         );
     } else {
         println!(
@@ -21,33 +20,100 @@ fn cleanup_env_file() {
             "No .env file to remove or failed to delete."
                 .bold()
                 .red()
-                .to_string()
         );
     }
+}
+
+fn setup_macos_service(env_path: &str) -> Result<(), std::io::Error> {
+    println!("{}", "Setting up macOS launchd service...".yellow().bold());
+
+    let home_dir = dirs::home_dir().ok_or_else(||
+        std::io::Error::new(std::io::ErrorKind::NotFound, "Could not find home directory"))?;
+
+    let service_name = "com.dormnet.plist";
+    let launch_agents_dir = home_dir.join("Library/LaunchAgents");
+    let service_path = launch_agents_dir.join(service_name);
+
+    // Create LaunchAgents directory if it doesn't exist
+    fs::create_dir_all(&launch_agents_dir)?;
+
+    let working_dir = fs::canonicalize("../dormnet")?;
+    let env_contents = fs::read_to_string(env_path)?;
+
+    let mongo_uri = env_contents.lines()
+        .find(|l| l.starts_with("MONGO_URI="))
+        .map(|l| l.trim_start_matches("MONGO_URI="))
+        .unwrap_or("");
+
+    let session_password = env_contents.lines()
+        .find(|l| l.starts_with("SESSION_PASSWORD="))
+        .map(|l| l.trim_start_matches("SESSION_PASSWORD="))
+        .unwrap_or("");
+
+    let service_content = format!(
+        r#"<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.dormnet</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/npm</string>
+        <string>start</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>{}</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>MONGO_URI</key>
+        <string>{}</string>
+        <key>SESSION_PASSWORD</key>
+        <string>{}</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/dormnet.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/dormnet.err.log</string>
+</dict>
+</plist>"#,
+        working_dir.display(),
+        mongo_uri,
+        session_password
+    );
+
+    fs::write(&service_path, service_content)?;
+
+    println!("{}", "Launchd service file created successfully".green());
+    println!("To load the service, run:");
+    println!("  launchctl load {}", service_path.display());
+
+    Ok(())
 }
 
 fn main() {
     println!(
         "{}",
-        "Welcome to the DormNet installer for your Linux Container/VM"
+        "Welcome to the DormNet installer"
             .green()
             .bold()
-            .to_string()
     );
 
+    // Get MongoDB URI
     let mongo_uri: String = loop {
         let input_uri: String = Input::new()
-            .with_prompt("Please Enter your MongoDB URI: ")
+            .with_prompt("Please Enter your MongoDB URI")
             .interact_text()
             .unwrap();
 
+        let prompt_text = format!("Is this correct?: {}", input_uri);
+        println!("{}", prompt_text.cyan().bold());
+
         let confirmation = Confirm::new()
-            .with_prompt(
-                format!("Is this the correct URI?: {}", input_uri)
-                    .bold()
-                    .cyan()
-                    .to_string(),
-            )
             .default(true)
             .interact()
             .unwrap();
@@ -55,44 +121,39 @@ fn main() {
         if confirmation {
             break input_uri;
         } else {
-            println!("{}", "Please try again...".yellow().to_string());
+            println!("{}", "Please try again...".yellow());
         }
     };
 
-    println!("Using URI: {}", mongo_uri.bold().green().to_string());
+    println!("Using URI: {}", mongo_uri.bold().green());
 
+    // Create .env file
     let env_path = "../dormnet/.env";
     let mut env_file = File::create(env_path).unwrap_or_else(|e| {
         println!("Error writing to .env: {}", e);
         cleanup_env_file();
         std::process::exit(1);
     });
+
     writeln!(env_file, "MONGO_URI={}", mongo_uri).unwrap_or_else(|e| {
         println!("Error writing to .env: {}", e);
         cleanup_env_file();
         std::process::exit(1);
     });
 
-    println!(
-        "{}",
-        "Generating Session Password...".bold().yellow().to_string()
-    );
-    let charset = "abcdefghijklmnopqrstuvwsyz1234567890!@#$%^&*()-_=+{}[];:,.<>?";
+    // Generate session password
+    println!("{}", "Generating Session Password...".bold().yellow());
+    let charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
     let session_password: String = generate(32, charset);
     writeln!(env_file, "SESSION_PASSWORD={}", session_password).unwrap_or_else(|e| {
         println!("Error writing to .env: {}", e);
         cleanup_env_file();
         std::process::exit(1);
     });
-    println!("{}", "Generated Successfully!".green().to_string());
+    println!("{}", "Generated Successfully!".green());
 
-    println!(
-        "{}",
-        "Installing Node.js dependencies..."
-            .yellow()
-            .bold()
-            .to_string()
-    );
+    // Install Node.js dependencies
+    println!("{}", "Installing Node.js dependencies...".yellow().bold());
     let install_status = Command::new("npm")
         .arg("install")
         .current_dir("../dormnet")
@@ -100,20 +161,13 @@ fn main() {
         .expect("Failed to run npm install");
 
     if !install_status.success() {
-        eprintln!(
-            "{}",
-            "Node.js failed to install dependencies, aborting..."
-                .red()
-                .bold()
-        );
+        eprintln!("{}", "npm install failed, aborting...".red().bold());
         cleanup_env_file();
         std::process::exit(1);
     }
 
-    println!(
-        "{}",
-        "Building the Next.js app...".yellow().bold().to_string()
-    );
+    // Build Next.js app
+    println!("{}", "Building the Next.js app...".yellow().bold());
     let build_status = Command::new("npm")
         .arg("run")
         .arg("build")
@@ -127,58 +181,30 @@ fn main() {
         std::process::exit(1);
     }
 
-    println!(
-        "{}",
-        "Creating systemd Service...".bold().yellow().to_string()
-    );
-    let service_name = "dormnet.service";
-    let service_content = format!(
-        "[Unit]
-Description=DormNet
-After=network.target
+    // OS-specific service setup
+    match std::env::consts::OS {
+        "linux" => {
+            println!("{}", "Linux detected - systemd setup would go here".yellow());
+            println!("{}", "Please configure systemd manually for Linux".bold());
+        },
+        "macos" => {
+            if let Err(e) = setup_macos_service(env_path) {
+                println!("Failed to setup macOS service: {}", e);
+                cleanup_env_file();
+                std::process::exit(1);
+            }
+        },
+        _ => {
+            println!(
+                "{}",
+                "Automatic service setup not supported for this OS. Please configure manually."
+                    .bold()
+                    .yellow()
+            );
+        }
+    }
 
-[Service]
-Type=simple
-User={}
-WorkingDirectory={}
-ExecStart=/usr/bin/npm start
-Restart=always
-EnvironmentFile={}
-
-[Install]
-WantedBy=multi-user.target",
-        whoami::username(),
-        fs::canonicalize("../dormnet").unwrap().display(),
-        fs::canonicalize(env_path).unwrap().display()
-    );
-
-    let service_path = format!("/etc/systemd/system/{}", service_name);
-    fs::write(&service_path, service_content).unwrap_or_else(|e| {
-        println!("Failed to write systemd service file: {}", e);
-        cleanup_env_file();
-        std::process::exit(1);
-    });
-
-    Command::new("systemctl")
-        .arg("daemon-reexec")
-        .status()
-        .unwrap();
-
-    Command::new("systemctl")
-        .arg("enable")
-        .arg(&service_name)
-        .status()
-        .unwrap();
-
-    Command::new("systemctl")
-        .arg("start")
-        .arg(&service_name)
-        .status()
-        .unwrap();
-
-    println!(
-        "{} {}",
-        "Installation complete. Service started:",
-        service_name.bold().green().to_string()
-    );
+    println!("{}", "\nInstallation complete!".bold().green());
+    println!("To start the app manually, run:");
+    println!("  cd ../dormnet && npm start");
 }
