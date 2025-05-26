@@ -39,7 +39,7 @@ export function RegisterForm() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:6758/register", {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,25 +51,32 @@ export function RegisterForm() {
           email: values.email,
           password: values.password,
         }),
+        credentials: "include", // Important for session cookies
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message ||
+            errorData.errors?.join(", ") ||
+            "Registration failed. Please try again.",
+        );
       }
 
       // Registration successful - redirect to login
-      router.push("/login");
+      router.push("/login?registered=true");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred",
+      );
+      console.error("Registration error:", err);
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 border rounded-lg shadow-sm">
+    <div className="max-w-md mx-auto p-6 border rounded-lg shadow-sm bg-white">
       <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
 
       {error && (
@@ -88,7 +95,7 @@ export function RegisterForm() {
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John" {...field} />
+                    <Input placeholder="John" {...field} disabled={isLoading} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -101,7 +108,7 @@ export function RegisterForm() {
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Doe" {...field} />
+                    <Input placeholder="Doe" {...field} disabled={isLoading} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -116,7 +123,11 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="johndoe" {...field} />
+                  <Input
+                    placeholder="johndoe"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -134,6 +145,7 @@ export function RegisterForm() {
                     type="email"
                     placeholder="john@example.com"
                     {...field}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -148,7 +160,12 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -162,7 +179,12 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -170,8 +192,41 @@ export function RegisterForm() {
           />
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create Account"}
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Creating account...
+              </span>
+            ) : (
+              "Create Account"
+            )}
           </Button>
+
+          <div className="text-center text-sm mt-4">
+            Already have an account?{" "}
+            <a href="/login" className="text-blue-600 hover:underline">
+              Sign in
+            </a>
+          </div>
         </form>
       </Form>
     </div>
