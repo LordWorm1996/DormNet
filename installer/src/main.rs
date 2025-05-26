@@ -46,7 +46,29 @@ fn main() {
             windows_cleanup();
             windows_install(env_path);
         }
-        os_info::Type::Linux => {
+        t if matches!(
+            t,
+            os_info::Type::Alpine
+                | os_info::Type::Amazon
+                | os_info::Type::Arch
+                | os_info::Type::CentOS
+                | os_info::Type::Debian
+                | os_info::Type::EndeavourOS
+                | os_info::Type::Fedora
+                | os_info::Type::Gentoo
+                | os_info::Type::Linux
+                | os_info::Type::Manjaro
+                | os_info::Type::Mint
+                | os_info::Type::NixOS
+                | os_info::Type::openSUSE
+                | os_info::Type::OracleLinux
+                | os_info::Type::Pop
+                | os_info::Type::Solus
+                | os_info::Type::SUSE
+                | os_info::Type::Ubuntu
+                | os_info::Type::Void
+        ) =>
+        {
             println!(
                 "{}",
                 "Running Linux-specific code and Initial Cleanup..."

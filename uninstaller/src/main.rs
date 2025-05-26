@@ -36,8 +36,30 @@ fn main() {
                 );
                 windows_cleanup();
             }
-            os_info::Type::Linux => {
-                println!("{}", "Running Linux-specific code...".yellow().to_string());
+            t if matches!(
+                t,
+                os_info::Type::Alpine
+                    | os_info::Type::Amazon
+                    | os_info::Type::Arch
+                    | os_info::Type::CentOS
+                    | os_info::Type::Debian
+                    | os_info::Type::EndeavourOS
+                    | os_info::Type::Fedora
+                    | os_info::Type::Gentoo
+                    | os_info::Type::Linux
+                    | os_info::Type::Manjaro
+                    | os_info::Type::Mint
+                    | os_info::Type::NixOS
+                    | os_info::Type::openSUSE
+                    | os_info::Type::OracleLinux
+                    | os_info::Type::Pop
+                    | os_info::Type::Solus
+                    | os_info::Type::SUSE
+                    | os_info::Type::Ubuntu
+                    | os_info::Type::Void
+            ) =>
+            {
+                println!("Running Linux-specific code...");
                 cleanup_systemd_file();
             }
             _ => {
