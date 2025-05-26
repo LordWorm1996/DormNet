@@ -182,7 +182,7 @@ fn session_password(env_file: &mut File) {
         "{}",
         "Generating Session Password...".bold().yellow().to_string()
     );
-    let charset = "abcdefghijklmnopqrstuvwsyz1234567890!@#$%^&*()-_=+{}[];:,.<>?";
+    let charset = "abcdefghijklmnopqrstuvwsyz1234567890!@#$%^&*()";
     let session_password: String = generate(32, charset);
     writeln!(env_file, "SESSION_PASSWORD={}", session_password).unwrap_or_else(|e| {
         println!("Error writing to .env: {}", e);

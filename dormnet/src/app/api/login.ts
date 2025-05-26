@@ -1,7 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "@/lib/session";
 import bcrypt from "bcrypt";
+import { connectDB } from "../../utils/db";
 import User from "@/models/User"; // Your User model
+
+connectDB();
 
 export default async function handler(
   req: NextApiRequest,
