@@ -1,6 +1,43 @@
 # DormNet
 Practice Enterprise Project for the Thomas More Univercity. We are trying to develop a booking application to be used in student dormitories to log actions done by the students living there. You can book house appliances for use in specific time frames like kitchen, washing machine, dryer, bathroom and so on. Depending on what the house offers you can add them to the list in the "Dorm" database that will track all requests and booking for all the students that have been invited to the house by the admin that the students decide. It will feature (hopefully) a secure authentication and authorization and limiters on how often an appliance can be used. 
 
+## Supported Systems
+
+### Linux Distros
+
+- Alpine
+- Amazon
+- Arch
+- CentOS
+- Debian
+- EndeavourOS
+- Fedora
+- Gentoo
+- Linux (generic fallback)
+- Manjaro
+- Mint
+- NixOS
+- openSUSE
+- OracleLinux
+- Pop
+- Solus
+- SUSE
+- Ubuntu
+- Void
+
+### Windows
+
+- Windows 11*
+- Windows Server 2025
+- Windows Server 2022
+- Windows Server 2019
+- Windows Server 2016
+- Windows 10*
+- Windows 8/8.1*
+- Windows 7*
+
+*Since Win10 and below won't be officially supported by Microsoft sooner or later, exessive testing won't be done as I don't expect many people to use those versions, depends on what NSSM also supports (They specifically say that anything above Windows Server 2000 and Windows 7 should work), nothing is listed about Win11 but people mentioned that it does work as indendent
+
 ## Installation
 
 ### Dependencies (Linux)
