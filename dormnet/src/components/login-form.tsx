@@ -30,12 +30,14 @@ export function LoginForm({
     setError("");
 
     try {
-      const response = await fetch("http://localhost:6758/login", {
+      const response = await fetch("/api/login", {
+        // Updated endpoint to match Next.js API route
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // Important for session cookies
       });
 
       const data = await response.json();
@@ -44,15 +46,10 @@ export function LoginForm({
         throw new Error(data.message || "Login failed");
       }
 
-      // Handle successful login (without cookies)
-      // Option 1: Store token in memory (volatile)
-      // Option 2: Use localStorage (persistent but less secure)
-      if (data.token) {
-        localStorage.setItem("authToken", data.token);
-      }
-
-      // Redirect to protected page
+      // Redirect to dashboard after successful login
       router.push("/dashboard");
+      // Optional: force refresh to ensure session is loaded
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
