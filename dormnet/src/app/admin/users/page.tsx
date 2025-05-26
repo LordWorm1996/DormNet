@@ -24,7 +24,7 @@ export default function AdminUsersPage() {
         method: "POST",
         credentials: "include",
       });
-      await mutate(); // ← await here
+      await mutate();
       alert(`User ${action}ed successfully`);
     } catch (err: unknown) {
       let msg = "Unknown error";
@@ -33,8 +33,7 @@ export default function AdminUsersPage() {
       } else if (typeof err === "string") {
         msg = err;
       }
-      // Now `msg` is guaranteed a string
-      alert("Error: " + (msg as string));
+      alert("Error: " + msg);
     }
   }
 
@@ -51,19 +50,19 @@ export default function AdminUsersPage() {
         </thead>
         <tbody>
           {users.map((u) => (
-            <tr key={u._id} className="border-t">
+            <tr key={u._id.toString()} className="border-t">
               <td className="p-2">{u.email}</td>
               <td className="p-2">{u.role}</td>
               <td className="p-2 space-x-2">
                 <button
                   className="px-2 py-1 bg-red-500 text-white rounded"
-                  onClick={() => handleAction(u._id, "ban")}
+                  onClick={() => handleAction(u._id.toString(), "ban")}
                 >
                   Ban
                 </button>
                 <button
                   className="px-2 py-1 bg-blue-500 text-white rounded"
-                  onClick={() => handleAction(u._id, "promote")}
+                  onClick={() => handleAction(u._id.toString(), "promote")}
                 >
                   Promote
                 </button>

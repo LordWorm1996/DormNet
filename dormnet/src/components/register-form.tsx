@@ -49,66 +49,86 @@ export function RegisterForm({
         credentials: "include",
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message ||
+            errorData.errors?.join(", ") ||
+            "Registration failed. Please try again.",
+        );
       }
 
-      router.push("/login");
+      router.push("/login?registered=true");
       router.refresh();
+
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred",
+      );
+      console.error("Registration error:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create an account</CardTitle>
-          <CardDescription>Join DormNet today</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-6">
-              <div className="grid gap-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">First Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="John"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="surname">Last Name</Label>
-                    <Input
-                      id="surname"
-                      placeholder="Doe"
-                      required
-                      value={surname}
-                      onChange={(e) => setSurname(e.target.value)}
-                    />
-                  </div>
-                </div>
+    <div className="max-w-md mx-auto p-6 border rounded-lg shadow-sm bg-white">
+      <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="username">Username</Label>
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John" {...field} disabled={isLoading} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="surname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Doe" {...field} disabled={isLoading} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
                   <Input
-                    id="username"
                     placeholder="johndoe"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    {...field}
+                    disabled={isLoading}
                   />
-                </div>
-
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -120,51 +140,82 @@ export function RegisterForm({
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
                   <Input
-                    id="password"
                     type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    {...field}
+                    disabled={isLoading}
                   />
-                </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                <div className="grid gap-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
                   <Input
-                    id="confirmPassword"
                     type="password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    {...field}
+                    disabled={isLoading}
                   />
-                </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                {error && (
-                  <p className="text-sm text-red-500 text-center">{error}</p>
-                )}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Creating account...
+              </span>
+            ) : (
+              "Create Account"
+            )}
+          </Button>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating account..." : "Create Account"}
-                </Button>
-              </div>
-              <div className="text-center text-sm">
-                <>Already have an account? </>
-                <a href="/login" className="underline underline-offset-4">
-                  Sign in
-                </a>
-              </div>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </div>
+          <div className="text-center text-sm mt-4">
+            Already have an account?{" "}
+            <a href="/login" className="text-blue-600 hover:underline">
+              Sign in
+            </a>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }
