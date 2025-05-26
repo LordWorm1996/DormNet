@@ -57,7 +57,7 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 - git
 - curl
 
-### Instructions (Linux)
+### Instructions - Linux
 
 1. Clone the repository `git clone https://github.com/LordWorm1996/DormNet.git`
 2. Move into the Installer directory `cd DormNet/installer`
@@ -68,7 +68,7 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 7. Now your DormNet will be accessible throught `http://localhost:3000` and will be running on startup as a systemd service on your Linux Container/VM
 8. Optional but reccomended reboot
 
-### Instructions (Windows)
+### Instructions - Windows
 
 1. Clone the repository `git clone https://github.com/LordWorm1996/DormNet.git`
 2. Move into the Installer directory `cd DormNet\installer`
@@ -88,7 +88,7 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 ## Uninstallation
 1. Move into the Uninstaller directory `cd DormNet/uninstaller`
 2. Run `cargo build --release`
-3. Run `sudo ./target/release/uninstaller` (Linux) or `.\target\release\installer.exe` (Windows)
+3. Run `sudo ./target/release/uninstaller` (Linux) or `.\target\release\uninstaller.exe` (Windows)
 4. This should remove the service and the .env file
 5. After that delete the DormNet cloned repo manually as the Uninstaller cannnot really delete itself!!!
 6. Reboot
