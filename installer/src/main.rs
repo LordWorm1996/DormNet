@@ -9,7 +9,7 @@ use std::process::Command;
 fn main() {
     println!(
         "{}",
-        "Welcome to the DormNet installer for your Linux Container/VM"
+        "Welcome to the DormNet Installer for your Machine"
             .green()
             .bold()
             .to_string()
@@ -59,7 +59,7 @@ fn main() {
         _ => {
             println!(
                 "{}",
-                "Unsupported OS, this installer only work for Linux and Windows! Aborting..."
+                "Unsupported OS, this Installer only works for Linux and Windows! Aborting..."
                     .bold()
                     .red()
                     .to_string()
