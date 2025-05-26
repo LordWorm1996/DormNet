@@ -1,37 +1,42 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { registerFormSchema } from "@/schema/register-form-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { z } from "zod";
 
-export function RegisterForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function RegisterForm() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [surname, setSurname] = useState("");
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<z.infer<typeof registerFormSchema>>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      name: "",
+      surname: "",
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof registerFormSchema>) {
     setIsLoading(true);
-    setError("");
+    setError(null);
 
     try {
       const response = await fetch("/api/register", {
@@ -40,13 +45,13 @@ export function RegisterForm({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          surname,
-          email,
-          username,
-          password,
+          username: values.username,
+          name: values.name,
+          surname: values.surname,
+          email: values.email,
+          password: values.password,
         }),
-        credentials: "include",
+        credentials: "include", // Important for session cookies
       });
 
       if (!response.ok) {
@@ -58,9 +63,8 @@ export function RegisterForm({
         );
       }
 
+      // Registration successful - redirect to login
       router.push("/login?registered=true");
-      router.refresh();
-
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unexpected error occurred",
@@ -69,7 +73,7 @@ export function RegisterForm({
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
     <div className="max-w-md mx-auto p-6 border rounded-lg shadow-sm bg-white">
@@ -129,17 +133,26 @@ export function RegisterForm({
               </FormItem>
             )}
           />
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
                   <Input
-                    id="email"
                     type="email"
-                    placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="john@example.com"
+                    {...field}
+                    disabled={isLoading}
                   />
-                </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="password"
