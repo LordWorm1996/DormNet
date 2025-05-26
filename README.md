@@ -45,3 +45,10 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 - If you're on Debian 12 or older you need to install rustup's latest version from the web because the apt cargo package is outdated `https://rustup.rs/` and run `rustup update` and `source $HOME/.cargo` (not tested on newer versions but if you get messages like cargo is out of date then install rustup from the web)
 - If you're on Arch this issue is not revelant as they are always up to date
 - As of this moment minimal testing has been done on Windows if you experience errors on file writing make sure you run the installer as an Admin, if you get other issues for now you are on your own
+
+## Uninstallation
+1. Move into the Uninstaller directory `cd DormNet/uninstaller`
+2. Run `cargo build --release`
+3. Run `sudo ./target/release/uninstaller`
+4. This should remove the service and the .env file
+5. After that delete the DormNet cloned repo manually as the Uninstaller cannnot really delete itself!!!
