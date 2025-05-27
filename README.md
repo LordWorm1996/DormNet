@@ -90,5 +90,5 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 2. Run `cargo build --release`
 3. Run `sudo ./target/release/uninstaller` (Linux) or `.\target\release\uninstaller.exe` (Windows)
 4. This should remove the service and the .env file
-5. After that delete the DormNet cloned repo manually as the Uninstaller cannnot really delete itself!!!
+5. After that delete the DormNet cloned repo manually as the Uninstaller cannot delete itself!!!
 6. Reboot
