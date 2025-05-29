@@ -155,29 +155,25 @@ export function BookingCalendar({ className }: BookingCalendarProps) {
                     {format(day, "d")}
                   </div>
 
-                  <div className="flex-1 overflow-hidden space-y-1 mt-1">
-                    {dayRes.slice(0, 2).map((reservation) => (
+                  <div className="flex-1 overflow-y-auto space-y-1 mt-1">
+                    {dayRes.map((reservation) => (
                       <div
                         key={reservation._id}
                         className={cn(
-                          "text-xs p-1 rounded truncate",
+                          "text-[10px] px-1 py-[2px] rounded bg-opacity-90 truncate border",
                           reservation.status === "active" &&
-                            "bg-green-100 text-green-800",
+                            "bg-green-100 text-green-800 border-green-300",
                           reservation.status === "completed" &&
-                            "bg-blue-100 text-blue-800",
+                            "bg-blue-100 text-blue-800 border-blue-300",
                           reservation.status === "cancelled" &&
-                            "bg-red-100 text-red-800",
+                            "bg-red-100 text-red-800 border-red-300",
                         )}
+                        title={`${reservation.appliance.name} (${format(new Date(reservation.startTime), "HH:mm")} - ${format(new Date(reservation.endTime), "HH:mm")})`}
                       >
                         {format(new Date(reservation.startTime), "HH:mm")}{" "}
                         {reservation.appliance.name}
                       </div>
                     ))}
-                    {dayRes.length > 2 && (
-                      <div className="text-xs text-muted-foreground text-center">
-                        +{dayRes.length - 2} more
-                      </div>
-                    )}
                   </div>
                 </div>
               );
