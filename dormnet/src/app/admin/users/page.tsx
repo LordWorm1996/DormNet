@@ -1,6 +1,6 @@
 "use client";
 import useSWR from "swr";
-import type { IUser } from "@/models/User";
+import type { IUser } from "@models/User";
 
 const fetchWithCredentials = (url: string): Promise<IUser[]> =>
   fetch(url, { credentials: "include" }).then((res) => {
