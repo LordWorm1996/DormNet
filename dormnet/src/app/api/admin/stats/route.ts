@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import connect from "@/lib/mongodb";
 import { authorizeAdmin } from "@/lib/auth";
 import User from "@/models/User";
-import Machine from "@/models/Machine";
+import Appliance from "@models/Appliance";
 import Reservation from "@/models/Reservation";
 
 export async function GET(req: Request) {
@@ -13,10 +13,10 @@ export async function GET(req: Request) {
   await connect();
 
   const userCount = await User.countDocuments();
-  const machineCount = await Machine.countDocuments();
+  const ApplianceCount = await Appliance.countDocuments();
   const activeReservations = await Reservation.countDocuments({
     status: "active",
   });
 
-  return NextResponse.json({ userCount, machineCount, activeReservations });
+  return NextResponse.json({ userCount, ApplianceCount, activeReservations });
 }

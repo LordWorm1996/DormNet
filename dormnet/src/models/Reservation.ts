@@ -1,27 +1,21 @@
-// src/models/Reservation.ts
-import mongoose from "mongoose";
+// src/models/reservation.ts
 
-const ReservationSchema = new mongoose.Schema(
+import mongoose, { Document, Schema } from "mongoose";
+
+const ReservationSchema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: Schema.Types.ObjectId,
+      ref: "User", // ✅ this must match your User model name
       required: true,
     },
-    machine: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Machine",
+    appliance: {
+      type: Schema.Types.ObjectId,
+      ref: "Appliance", // ✅ this must match your Appliance model name
       required: true,
     },
-    startTime: {
-      type: Date,
-      required: true,
-      default: () => new Date(),
-    },
-    endTime: {
-      type: Date,
-      required: true,
-    },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
     status: {
       type: String,
       enum: ["active", "completed", "cancelled"],
@@ -31,6 +25,7 @@ const ReservationSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Export model
 const Reservation =
   mongoose.models.Reservation ||
   mongoose.model("Reservation", ReservationSchema);

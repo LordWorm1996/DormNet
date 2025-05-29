@@ -2,31 +2,31 @@
 
 import useSWR from "swr";
 import { useState } from "react";
-import type { IMachine } from "@/models/Machine";
+import { IAppliance } from "@/shared/interfaces";
 
-const fetchWithCredentials = async (url: string): Promise<IMachine[]> => {
+const fetchWithCredentials = async (url: string): Promise<IAppliance[]> => {
   const res = await fetch(url, { credentials: "include" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json() as Promise<IMachine[]>;
+  return res.json() as Promise<IAppliance[]>;
 };
 
-export default function AdminMachinesPage() {
+export default function AdminAppliancesPage() {
   const {
-    data: machines,
+    data: Appliances,
     error,
     mutate,
-  } = useSWR<IMachine[]>("/api/admin/machine", fetchWithCredentials);
+  } = useSWR<IAppliance[]>("/api/admin/Appliance", fetchWithCredentials);
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
 
-  if (error) return <p className="text-red-500">Error loading machines.</p>;
-  if (!machines) return <p>Loading machines…</p>;
+  if (error) return <p className="text-red-500">Error loading Appliances.</p>;
+  if (!Appliances) return <p>Loading Appliances…</p>;
 
-  const addMachine = async (e: React.FormEvent) => {
+  const addAppliance = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     try {
-      await fetch("/api/admin/machine", {
+      await fetch("/api/admin/Appliance", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -45,12 +45,12 @@ export default function AdminMachinesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Machine Management</h1>
+      <h1 className="text-2xl font-bold mb-4">Appliance Management</h1>
 
-      <form onSubmit={addMachine} className="mb-4 flex gap-2">
+      <form onSubmit={addAppliance} className="mb-4 flex gap-2">
         <input
           className="flex-1 p-2 border rounded"
-          placeholder="New machine name"
+          placeholder="New Appliance name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           disabled={busy}
@@ -60,12 +60,12 @@ export default function AdminMachinesPage() {
           disabled={busy || !name.trim()}
           className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
         >
-          {busy ? "Adding…" : "Add Machine"}
+          {busy ? "Adding…" : "Add Appliance"}
         </button>
       </form>
 
       <ul className="space-y-2">
-        {machines.map((m) => (
+        {Appliances.map((m) => (
           <li key={m._id} className="p-2 bg-white rounded shadow">
             <strong>{m.name}</strong> — {m.status}
           </li>
