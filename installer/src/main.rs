@@ -93,7 +93,7 @@ fn main() {
     let my_local_ip = local_ip().unwrap().to_string();
     println!(
         "{} {}{}",
-        "Installation complete. DormNet runs at "
+        "Installation complete. DormNet runs at:"
             .bold()
             .green()
             .to_string(),
