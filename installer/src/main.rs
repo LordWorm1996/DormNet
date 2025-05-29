@@ -1,7 +1,6 @@
 use colored::Colorize;
 use dialoguer::{Confirm, Input};
 use os_info;
-use random_string::generate;
 use std::fs::{self, File};
 use std::io::Write;
 use std::process::Command;
@@ -30,7 +29,6 @@ fn main() {
     });
 
     mongo_uri(&mut env_file);
-    session_password(&mut env_file);
     next_build();
 
     let info = os_info::get();
@@ -197,21 +195,6 @@ fn mongo_uri(env_file: &mut File) {
         cleanup_env_file();
         std::process::exit(1);
     });
-}
-
-fn session_password(env_file: &mut File) {
-    println!(
-        "{}",
-        "Generating Session Password...".bold().yellow().to_string()
-    );
-    let charset = "abcdefghijklmnopqrstuvwsyz1234567890!@#$%^&*()";
-    let session_password: String = generate(32, charset);
-    writeln!(env_file, "SESSION_PASSWORD={}", session_password).unwrap_or_else(|e| {
-        println!("Error writing to .env: {}", e);
-        cleanup_env_file();
-        std::process::exit(1);
-    });
-    println!("{}", "Generated Successfully!".green().to_string());
 }
 
 fn next_build() {
