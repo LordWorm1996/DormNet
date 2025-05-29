@@ -1,5 +1,6 @@
 use colored::Colorize;
 use dialoguer::{Confirm, Input};
+use local_ip_address::local_ip;
 use os_info;
 use std::fs::{self, File};
 use std::io::Write;
@@ -88,6 +89,17 @@ fn main() {
             std::process::exit(1);
         }
     }
+
+    let my_local_ip = local_ip().unwrap().to_string();
+    println!(
+        "{} {}{}",
+        "Installation complete. DormNet runs at "
+            .bold()
+            .green()
+            .to_string(),
+        my_local_ip.bold().green(),
+        ":3000".bold().green().to_string()
+    );
 }
 
 fn cleanup_env_file() {
