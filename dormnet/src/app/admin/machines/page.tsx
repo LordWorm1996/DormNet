@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import { useState } from "react";
-import type { IMachine } from "@/models/Machine";
+import type { IMachine } from "@models/Machine";
 
 const fetchWithCredentials = async (url: string): Promise<IMachine[]> => {
   const res = await fetch(url, { credentials: "include" });

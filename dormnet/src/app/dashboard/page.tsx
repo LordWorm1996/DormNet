@@ -1,10 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogoFullLink } from "@/components/ui/shared";
-import { getAppSession } from "@/lib/session";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
+import { LogoFullLink } from "@ui/shared";
+import { getSession } from "@lib/session";
 import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
-  const session = await getAppSession();
+  const session = await getSession();
 
   if (!session.user) {
     redirect("/login");
