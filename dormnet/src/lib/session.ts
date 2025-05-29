@@ -5,10 +5,11 @@ const SESSION_UPDATE_AGE = 24 * 60 * 60; // Update session daily if active
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: false,
+  secure: false, // Disable for HTTP local network
+  sameSite: "lax" as const, // Or "none" if needed
   path: "/",
   maxAge: SESSION_MAX_AGE,
-  domain: undefined,
+  domain: "", // Empty string allows IP access
 };
 
 interface SessionUser {
