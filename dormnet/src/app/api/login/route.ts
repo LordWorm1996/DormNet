@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/utils/db";
-import User from "@/models/User";
+import { connectDB } from "@utils/db";
+import User from "@models/User";
 import bcrypt from "bcrypt";
-import { createSession } from "@/lib/session";
+import { createSession } from "@lib/session";
 
 export async function POST(request: Request) {
   await connectDB();

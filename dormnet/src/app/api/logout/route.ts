@@ -1,4 +1,4 @@
-import { destroySession } from "@/lib/session";
+import { destroySession } from "@lib/session";
 import { redirect } from "next/navigation";
 
 export async function POST() {
