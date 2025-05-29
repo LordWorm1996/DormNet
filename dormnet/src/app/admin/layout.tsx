@@ -20,7 +20,7 @@ export default function AdminLayout({
             Users
           </Link>
           <Link
-            href="/admin/Appliances"
+            href="/admin/appliances"
             className="p-2 hover:bg-gray-700 rounded"
           >
             Appliances

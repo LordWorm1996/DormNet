@@ -1,6 +1,6 @@
 // src/models/reservation.ts
 
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const ReservationSchema = new Schema(
   {
