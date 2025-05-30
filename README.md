@@ -96,7 +96,8 @@ Practice Enterprise Project for the Thomas More Univercity. We are developing a 
 - As of this moment minimal testing has been done on Windows if you experience errors on file writing make sure you run the installer as an Admin, if you get other issues for now you are on your own
 - If you enter `http://host_ip:3000` and nothing pops up make sure that you're not using the port 3000 for something else, Nxt.js will default to 3001, but if you check the service status `systemctl status dormnet` you should see the IP and Port it runs on (ONLY ON LOCAL HOST THE IP IS DESPLAYED AT THE END OF THE INSTALLTION, ITS THE IP OF THE MACHINE YOU INSTALLED IT INTO YOU SHOULD KNOW IT)
 - There is no admin role by default, inform your supervisor to edit the database and assign the role `admin` to one person
-- If the calendar crashes it might be because there's no applience made, go to MongoDB atlas and make a collection named `appliences` and put this as the first object
+- If the calendar crashes it might be because there's no applience made, go to MongoDB atlas and make a collection named `appliences` and put this as the first object, then restart the service, if it doesn't work uninstall and reinstall it
+
 ```
 _id
 683a0b6e9e1438b49bdb1b3e
