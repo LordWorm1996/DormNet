@@ -14,6 +14,7 @@ const COOKIE_OPTIONS = {
 interface SessionUser {
   id: string;
   email: string;
+  role: string;
 }
 
 interface SessionData {

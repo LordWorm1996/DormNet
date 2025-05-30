@@ -1,17 +1,17 @@
 import User from "@models/User";
 import bcrypt from "bcrypt";
 import { customAlphabet } from "nanoid";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { connectDB } from "@utils/db";
 import { authorizeAdmin } from "@lib/auth";
 
 export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } },
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = params;
-  const authResult = await authorizeAdmin();
-  if (authResult instanceof NextResponse) return authResult;
+  const authError = await authorizeAdmin();
+  if (authError) return authError;
+  const { id } = await params;
 
   await connectDB();
 
@@ -29,6 +29,7 @@ export async function POST(
 
   await User.findByIdAndUpdate(id, {
     password: hashedPassword,
+    passwordResetRequested: false,
     $unset: { passwordResetToken: 1 },
   });
 
