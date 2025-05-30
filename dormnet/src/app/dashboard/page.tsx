@@ -1,31 +1,121 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
-import { LogoFullLink } from "@ui/shared";
-import { getSession } from "@lib/session";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function Dashboard() {
-  const session = await getSession();
+import { useEffect, useState } from "react";
+import { format, startOfWeek, endOfWeek, addWeeks, subWeeks } from "date-fns";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { IReservation } from "@/shared/interfaces";
+import { cn } from "@/lib/utils";
 
-  if (!session.user) {
-    redirect("/login");
-  }
+export default function DashboardReservationsCard() {
+  const [weekStart, setWeekStart] = useState(
+    startOfWeek(new Date(), { weekStartsOn: 1 }),
+  );
+  const [reservations, setReservations] = useState<IReservation[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
+  const days = Array.from(
+    { length: 7 },
+    (_, i) => new Date(weekStart.getTime() + i * 86400000),
+  );
+
+  const fetchReservations = async () => {
+    try {
+      const response = await fetch(
+        `/api/bookings?startDate=${weekStart.toISOString()}&endDate=${weekEnd.toISOString()}`,
+      );
+      const data = await response.json();
+      setReservations(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to fetch reservations", err);
+    }
+  };
+
+  const fetchSession = async () => {
+    try {
+      const res = await fetch("/api/session");
+      const data = await res.json();
+      if (data?.user?.id) setUserId(data.user.id);
+    } catch (err) {
+      console.error("Failed to fetch session", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReservations();
+    fetchSession();
+  }, [weekStart]);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex space-x-1">
-            <div>Welcome to </div>
-            <LogoFullLink />
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Logged in as:</p>
-            <p className="font-medium">{session.user.email}</p>
-          </div>
-        </CardContent>
-      </Card>
-    </main>
+    <Card className="w-full shadow-md">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Weekly Reservations</CardTitle>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setWeekStart(subWeeks(weekStart, 1))}
+          >
+            Prev Week
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setWeekStart(addWeeks(weekStart, 1))}
+          >
+            Next Week
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-7 text-center text-sm font-medium border-b pb-2">
+          {days.map((day) => (
+            <div key={day.toISOString()}>{format(day, "EEE d")}</div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-2 mt-2">
+          {days.map((day) => {
+            const dayReservations = reservations.filter((r) => {
+              const start = new Date(r.startTime);
+              return (
+                start >= new Date(day.setHours(0, 0, 0, 0)) &&
+                start <= new Date(day.setHours(23, 59, 59, 999))
+              );
+            });
+
+            return (
+              <div
+                key={day.toISOString()}
+                className="flex flex-col gap-1 p-1 border rounded"
+              >
+                {dayReservations.length === 0 ? (
+                  <span className="text-xs text-gray-400">No reservations</span>
+                ) : (
+                  dayReservations.map((res) => (
+                    <div
+                      key={res._id}
+                      className={cn(
+                        "text-xs p-1 rounded bg-blue-100 text-blue-800 truncate",
+                        res.user?._id === userId &&
+                          "border-2 border-blue-600 bg-blue-200 font-semibold",
+                      )}
+                      title={`${res.appliance.name} | ${format(
+                        new Date(res.startTime),
+                        "HH:mm",
+                      )} - ${format(new Date(res.endTime), "HH:mm")}`}
+                    >
+                      {format(new Date(res.startTime), "HH:mm")} -{" "}
+                      {res.appliance.name}
+                      <div className="text-[10px] text-gray-600">
+                        {res.user?.name || "Unknown"}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
