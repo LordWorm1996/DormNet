@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { connectDB } from "@utils/db";
 import { authorizeAdmin } from "@lib/auth";
 import User from "@models/User";
 
 export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } },
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = params;
-  const authResult = await authorizeAdmin();
-  if (authResult instanceof NextResponse) return authResult;
+  const authError = await authorizeAdmin();
+  if (authError) return authError;
+  const { id } = await params;
 
   await connectDB();
 

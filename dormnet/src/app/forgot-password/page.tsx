@@ -1,9 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { connectDB } from "@utils/db";
-import User from "@models/User";
-
 export default function ForgotPasswordPage() {
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -19,16 +16,24 @@ export default function ForgotPasswordPage() {
     setMessage(null);
 
     try {
-      const userExists = await verifyUsername(username);
+      const response = await fetch("/api/request-password-reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
 
-      if (!userExists) {
-        throw new Error("Username not found");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to process request");
       }
 
-      await notifyAdminAboutResetRequest(username);
-
       setMessage({
-        text: "The admin has been notified and will reset your password shortly.",
+        text:
+          data.message ||
+          "The admin has been notified and will reset your password shortly.",
         isError: false,
       });
 
@@ -42,21 +47,6 @@ export default function ForgotPasswordPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const verifyUsername = async (username: string): Promise<boolean> => {
-    try {
-      await connectDB();
-      const user = await User.findOne({ username });
-      return !!user;
-    } catch (error) {
-      console.error("Database verification error:", error);
-      return false;
-    }
-  };
-
-  const notifyAdminAboutResetRequest = async (username: string) => {
-    console.log(`Admin notified about password reset for: ${username}`);
   };
 
   return (

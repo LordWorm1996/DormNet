@@ -8,6 +8,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: string;
+  passwordResetRequested: boolean;
 }
 
 const UserSchema = new mongoose.Schema({
@@ -17,6 +18,10 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, default: "user" },
+  passwordResetRequested: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const User = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
