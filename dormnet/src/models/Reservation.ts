@@ -1,26 +1,19 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const ReservationSchema = new mongoose.Schema(
+const ReservationSchema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    machine: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Machine",
+    appliance: {
+      type: Schema.Types.ObjectId,
+      ref: "Appliance",
       required: true,
     },
-    startTime: {
-      type: Date,
-      required: true,
-      default: () => new Date(),
-    },
-    endTime: {
-      type: Date,
-      required: true,
-    },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
     status: {
       type: String,
       enum: ["active", "completed", "cancelled"],

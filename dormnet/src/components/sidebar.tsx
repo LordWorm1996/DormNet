@@ -2,15 +2,7 @@
 import Link from "next/link";
 import { Button } from "@ui/button";
 import { usePathname } from "next/navigation";
-import {
-  Folder,
-  CheckCircle2,
-  Users,
-  Settings,
-  LogOut,
-  Home,
-  Server,
-} from "lucide-react";
+import { Calendar, Settings, LogOut, Home, Server } from "lucide-react";
 import { LogoFullLink } from "@ui/shared";
 import { useEffect, useState } from "react";
 
@@ -54,19 +46,9 @@ export function Sidebar() {
       icon: <Home className="h-4 w-4" />,
     },
     {
-      name: "Projects",
-      href: "/projects",
-      icon: <Folder className="h-4 w-4" />,
-    },
-    {
-      name: "Tasks",
-      href: "/tasks",
-      icon: <CheckCircle2 className="h-4 w-4" />,
-    },
-    {
-      name: "Team",
-      href: "/team",
-      icon: <Users className="h-4 w-4" />,
+      name: "Calendar",
+      href: "/calendar",
+      icon: <Calendar className="h-4 w-4" />,
     },
     {
       name: "Settings",

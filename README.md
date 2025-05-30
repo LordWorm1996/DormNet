@@ -1,5 +1,5 @@
 # DormNet
-Practice Enterprise Project for the Thomas More Univercity. We are developing a booking application to be used in student dormitories to log actions done by the students living there. You can book house appliances for use in specific time frames like kitchen, washing machine, dryer, bathroom and so on. Depending on what the house offers you can add them to the list in the "Dorm" database that will track all requests and booking for all the students that have been invited to the house by the admin that the students decide.
+Practice Enterprise Project for the Thomas More Univercity. We are developing a booking application to be used in student dormitories to log actions done by the students living there. You can book house appliances for use in specific time frames like kitchen, washing appliance, dryer, bathroom and so on. Depending on what the house offers you can add them to the list in the "Dorm" database that will track all requests and booking for all the students that have been invited to the house by the admin that the students decide.
 
 ## Supported Systems
 

@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 interface Stats {
   userCount: number;
-  machineCount: number;
+  applianceCount: number;
   reservationCount: number;
 }
 
@@ -32,8 +32,8 @@ export default function AdminDashboardPage() {
           <p className="text-3xl">{data.userCount}</p>
         </div>
         <div className="p-4 bg-white rounded shadow">
-          <h2 className="text-lg font-medium">Machines</h2>
-          <p className="text-3xl">{data.machineCount}</p>
+          <h2 className="text-lg font-medium">Appliances</h2>
+          <p className="text-3xl">{data.applianceCount}</p>
         </div>
         <div className="p-4 bg-white rounded shadow">
           <h2 className="text-lg font-medium">Active Reservations</h2>

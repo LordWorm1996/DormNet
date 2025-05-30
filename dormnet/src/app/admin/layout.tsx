@@ -27,10 +27,10 @@ export default async function AdminLayout({
             Users
           </Link>
           <Link
-            href="/admin/machines"
+            href="/admin/appliances"
             className="p-2 hover:bg-gray-700 rounded"
           >
-            Machines
+            Appliances
           </Link>
         </nav>
       </aside>
