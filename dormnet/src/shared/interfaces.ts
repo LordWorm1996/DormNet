@@ -3,7 +3,7 @@ export interface IAppliance {
   name: string;
   type: string;
   status: "available" | "in-use";
-  defaultUseTime?: number; // in minutes (optional)
+  defaultUseTime?: number; // in minutes
   createdAt: string;
   updatedAt: string;
 }

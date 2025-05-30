@@ -2,9 +2,9 @@
 
 import { format } from "date-fns";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { IReservation } from "@/shared/interfaces";
+import { Button } from "@ui/button";
+import { cn } from "@lib/utils";
+import { IReservation } from "@shared/interfaces";
 
 interface DayDetailsCardProps {
   date: Date;
@@ -19,7 +19,6 @@ export function DayDetailsCard({
   reservations,
   onMakeReservation,
 }: DayDetailsCardProps) {
-  // Sort reservations by start time
   const sortedReservations = [...reservations].sort(
     (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
   );

@@ -1,6 +1,5 @@
-// src/app/api/bookings/conflict/route.ts
-import { connectDB } from "@/utils/db";
-import Reservation from "@/models/Reservation";
+import { connectDB } from "@utils/db";
+import Reservation from "@models/Reservation";
 
 export async function GET(req: Request) {
   await connectDB();

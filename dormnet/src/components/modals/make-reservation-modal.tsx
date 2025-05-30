@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from "@ui/dialog";
 import {
   Form,
   FormControl,
@@ -20,13 +20,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@ui/form";
+import { Input } from "@ui/input";
+import { Button } from "@ui/button";
 
-import { IAppliance } from "@/shared/interfaces";
-import { reservationFormSchema } from "@/schema/reservation-form-schema";
-import { cn } from "@/lib/utils";
+import { IAppliance } from "@shared/interfaces";
+import { reservationFormSchema } from "@schema/reservation-form-schema";
+import { cn } from "@lib/utils";
 
 interface MakeReservationModalProps {
   isOpen: boolean;
@@ -59,7 +59,6 @@ export function MakeReservationModal({
     },
   });
 
-  // Reset form defaults each time modal opens with a new date
   useEffect(() => {
     if (isOpen && date) {
       form.reset({

@@ -9,7 +9,7 @@ const ApplianceSchema = new Schema(
       enum: ["available", "in-use"],
       default: "available",
     },
-    defaultUseTime: { type: Number }, // optional in minutes
+    defaultUseTime: { type: Number }, // in minutes
   },
   { timestamps: true },
 );

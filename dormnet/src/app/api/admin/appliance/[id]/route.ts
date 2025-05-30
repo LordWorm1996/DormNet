@@ -35,15 +35,13 @@ export async function POST(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const authError = await authorizeAdmin();
   if (authError) return authError;
-
-  const { id } = params;
-
-  await connectDB();
+  const { id } = await params;
   const { name } = await request.json();
+  await connectDB();
 
   const appliance = await Appliance.findByIdAndUpdate(
     id,

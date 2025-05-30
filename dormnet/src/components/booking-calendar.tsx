@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   addMonths,
@@ -15,10 +15,10 @@ import {
   endOfWeek,
 } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
-import { DayDetailsCard } from "@/components/days-detail-card";
-import { MakeReservationModal } from "@/components/modals/make-reservation-modal";
-import { IReservation } from "@/shared/interfaces";
+import { useState, useEffect, useCallback } from "react";
+import { DayDetailsCard } from "@components/days-detail-card";
+import { MakeReservationModal } from "@modals/make-reservation-modal";
+import { IReservation } from "@shared/interfaces";
 
 interface BookingCalendarProps {
   className?: string;
@@ -43,25 +43,23 @@ export function BookingCalendar({ className }: BookingCalendarProps) {
 
   const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  // Fetch all reservations in the month
+  const fetchMonthReservations = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `/api/bookings?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+      );
+      const data = await response.json();
+      setReservations(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching reservations:", error);
+      setReservations([]);
+    }
+  }, [startDate, endDate]);
+
   useEffect(() => {
-    const fetchMonthReservations = async () => {
-      try {
-        const response = await fetch(
-          `/api/bookings?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
-        );
-        const data = await response.json();
-        setReservations(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error fetching reservations:", error);
-        setReservations([]); // fallback to empty
-      }
-    };
-
     fetchMonthReservations();
-  }, [currentMonth]);
+  }, [currentMonth, fetchMonthReservations]);
 
-  // Fetch reservations for the clicked day
   const handleDayClick = async (day: Date) => {
     try {
       const startOfDay = new Date(day);
@@ -81,7 +79,6 @@ export function BookingCalendar({ className }: BookingCalendarProps) {
     }
   };
 
-  // Handles closing both modal and day view
   const handleCloseAll = () => {
     setShowModal(false);
     setSelectedDate(null);
@@ -170,7 +167,8 @@ export function BookingCalendar({ className }: BookingCalendarProps) {
                         )}
                         title={`${reservation.appliance.name} (${format(new Date(reservation.startTime), "HH:mm")} - ${format(new Date(reservation.endTime), "HH:mm")})`}
                       >
-                        {format(new Date(reservation.startTime), "HH:mm")}{" "}
+                        {format(new Date(reservation.startTime), "HH:mm")}
+                        {""}
                         {reservation.appliance.name}
                       </div>
                     ))}

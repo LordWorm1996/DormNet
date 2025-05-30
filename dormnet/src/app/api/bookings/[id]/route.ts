@@ -1,15 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/utils/db";
-import Reservation from "@/models/Reservation";
+import { NextResponse } from "next/server";
+import { connectDB } from "@utils/db";
+import Reservation from "@models/Reservation";
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
 
-    const deleted = await Reservation.findByIdAndDelete(params.id);
+    const { id } = await params;
+    const deleted = await Reservation.findByIdAndDelete(id);
 
     if (!deleted) {
       return NextResponse.json(

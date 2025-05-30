@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import Reservation from "@/models/Reservation";
-import "@/models/User";
-import "@/models/Appliance";
+import Reservation from "@models/Reservation";
+import "@models/User";
+import "@models/Appliance";
 
-import { connectDB } from "@/utils/db";
+import { connectDB } from "@utils/db";
 import mongoose from "mongoose";
 import { getSession } from "@lib/session";
 
@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    await connectDB(); // ✅ Must connect to MongoDB first
+    await connectDB();
 
     const reservations = await Reservation.find({
       $or: [
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
         },
       ],
     })
-      .populate("appliance") // ensure .populate() works with schema
+      .populate("appliance")
       .populate("user");
 
     return Response.json(reservations);

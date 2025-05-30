@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   format,
   startOfWeek,
@@ -13,11 +13,11 @@ import {
   addDays,
   startOfDay,
 } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { IReservation, IAppliance } from "@/shared/interfaces";
-import { cn } from "@/lib/utils";
-import { MakeReservationModal } from "@/components/modals/make-reservation-modal";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
+import { Button } from "@ui/button";
+import { IReservation, IAppliance } from "@shared/interfaces";
+import { cn } from "@lib/utils";
+import { MakeReservationModal } from "@modals/make-reservation-modal";
 
 export default function DashboardReservationsCard() {
   const [weekStart, setWeekStart] = useState(
@@ -39,29 +39,29 @@ export default function DashboardReservationsCard() {
     (_, i) => new Date(weekStart.getTime() + i * 86400000),
   );
 
-  const fetchReservations = async () => {
+  const fetchReservations = useCallback(async () => {
     try {
       const response = await fetch(
         `/api/bookings?startDate=${weekStart.toISOString()}&endDate=${weekEnd.toISOString()}`,
       );
       const data = await response.json();
       setReservations(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Failed to fetch reservations", err);
+    } catch (error) {
+      console.error("Failed to fetch reservations", error);
     }
-  };
+  }, [weekStart, weekEnd]);
 
-  const fetchSession = async () => {
+  const fetchSession = useCallback(async () => {
     try {
       const res = await fetch("/api/session");
       const data = await res.json();
       if (data?.user?.id) setUserId(data.user.id);
-    } catch (err) {
-      console.error("Failed to fetch session", err);
+    } catch (error) {
+      console.error("Failed to fetch session", error);
     }
-  };
+  }, []);
 
-  const fetchUserReservations = () => {
+  const fetchUserReservations = useCallback(() => {
     const today = startOfDay(new Date());
     const filtered = reservations.filter(
       (res) =>
@@ -71,37 +71,37 @@ export default function DashboardReservationsCard() {
             isBefore(new Date(res.startTime), addDays(today, 4)))),
     );
     setUserReservations(filtered);
-  };
+  }, [reservations, userId]);
 
   const deleteReservation = async (id: string) => {
     try {
       await fetch(`/api/bookings/${id}`, { method: "DELETE" });
       setUserReservations((prev) => prev.filter((r) => r._id !== id));
       setReservations((prev) => prev.filter((r) => r._id !== id));
-    } catch (err) {
-      console.error("Failed to delete reservation", err);
+    } catch (error) {
+      console.error("Failed to delete reservation", error);
     }
   };
 
-  const fetchAppliances = async () => {
+  const fetchAppliances = useCallback(async () => {
     try {
       const res = await fetch("/api/appliances");
       const data = await res.json();
       setAppliances(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Failed to fetch appliances", err);
+    } catch (error) {
+      console.error("Failed to fetch appliances", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchReservations();
     fetchSession();
     fetchAppliances();
-  }, [weekStart]);
+  }, [fetchReservations, fetchSession, fetchAppliances, weekStart]);
 
   useEffect(() => {
     if (userId) fetchUserReservations();
-  }, [reservations, userId]);
+  }, [fetchUserReservations, reservations, userId]);
 
   return (
     <>

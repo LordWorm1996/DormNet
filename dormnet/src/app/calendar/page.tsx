@@ -1,4 +1,4 @@
-import { BookingCalendar } from "@/components/booking-calendar";
+import { BookingCalendar } from "@components/booking-calendar";
 
 export default function CalendarPage() {
   return (
