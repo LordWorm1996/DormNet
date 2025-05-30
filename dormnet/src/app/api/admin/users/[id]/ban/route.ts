@@ -5,10 +5,10 @@ import User from "@models/User";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
-  const { id } = await params;
-  const authResult = authorizeAdmin(req);
+  const { id } = params;
+  const authResult = await authorizeAdmin();
   if (authResult instanceof NextResponse) return authResult;
 
   await connectDB();
