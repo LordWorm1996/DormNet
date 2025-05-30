@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Folder,
   CheckCircle2,
@@ -15,11 +15,6 @@ import { LogoFullLink } from "@ui/shared";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogout = () => {
-    router.push("/login");
-  };
 
   const navItems = [
     {
@@ -79,15 +74,17 @@ export function Sidebar() {
           </nav>
         </div>
         <div className="mt-auto p-4">
-          <Button
-            size="sm"
-            className="w-full"
-            onClick={handleLogout}
-            variant="ghost"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
+          <form action="/api/logout" method="POST">
+            <Button
+              type="submit"
+              size="sm"
+              className="w-full pt-4"
+              variant="ghost"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
+          </form>
         </div>
       </div>
     </div>
