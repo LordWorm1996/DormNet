@@ -6,6 +6,7 @@ const SESSION_UPDATE_AGE = 24 * 60 * 60; // Update session daily if active
 interface SessionUser {
   id: string;
   email: string;
+  role: string;
   lastActive?: number;
 }
 
