@@ -5,6 +5,7 @@ import "@/models/Appliance";
 
 import { connectDB } from "@/utils/db";
 import mongoose from "mongoose";
+import { getSession } from "@lib/session";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -39,6 +40,13 @@ export async function GET(req: Request) {
 export async function POST(request: Request) {
   try {
     await connectDB();
+
+    const session = await getSession();
+
+    if (!session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { appliance, startTime, endTime } = body;
 
@@ -46,7 +54,7 @@ export async function POST(request: Request) {
       appliance,
       startTime,
       endTime,
-      user: new mongoose.Types.ObjectId("67d555d59b27b8b1141b654a"), // Replace later with real session
+      user: new mongoose.Types.ObjectId(session.user.id),
     });
 
     await newReservation.save();
