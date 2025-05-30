@@ -3,6 +3,17 @@ import { connectDB } from "@utils/db";
 import User from "@models/User";
 import bcrypt from "bcrypt";
 import { getSession } from "@lib/session";
+import { z } from "zod";
+
+const passwordSchema = z
+  .string()
+  .min(8, { message: "Password must be at least 8 characters" })
+  .regex(/[A-Z]/, { message: "Must contain at least one uppercase letter" })
+  .regex(/[a-z]/, { message: "Must contain at least one lowercase letter" })
+  .regex(/[0-9]/, { message: "Must contain at least one number" })
+  .regex(/[^A-Za-z0-9]/, {
+    message: "Must contain at least one special character",
+  });
 
 export async function POST(request: Request) {
   await connectDB();
@@ -16,6 +27,20 @@ export async function POST(request: Request) {
         { message: "Current password and new password are required" },
         { status: 400 },
       );
+    }
+
+    try {
+      passwordSchema.parse(newPassword);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          {
+            message: "Password validation failed",
+            errors: error.errors.map((err) => err.message),
+          },
+          { status: 400 },
+        );
+      }
     }
 
     const session = await getSession();

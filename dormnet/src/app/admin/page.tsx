@@ -14,7 +14,6 @@ const fetchWithCredentials = async (url: string): Promise<Stats> => {
   return (await res.json()) as Stats;
 };
 
-
 export default function AdminDashboardPage() {
   const { data, error } = useSWR<Stats>(
     "/api/admin/stats",
