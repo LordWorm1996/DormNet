@@ -1,13 +1,20 @@
-// src/app/admin/layout.tsx
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSession } from "@lib/session";
 
 export const metadata = { title: "Admin Panel – DormNet" };
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getSession();
+
+  if (!session.user || session.user.role !== "admin") {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex h-screen">
       <aside className="w-64 bg-gray-800 text-white p-4">
