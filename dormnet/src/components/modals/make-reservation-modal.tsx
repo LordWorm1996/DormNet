@@ -51,11 +51,24 @@ export function MakeReservationModal({
     defaultValues: {
       applianceId: "",
       date: date ? format(date, "yyyy-MM-dd") : format(now, "yyyy-MM-dd"),
-      time: format(now, "HH:mm"),
+      time: date ? format(date, "HH:mm") : format(now, "HH:mm"),
       durationHours: "3",
       durationMinutes: "0",
     },
   });
+
+  // Reset form defaults each time modal opens with a new date
+  useEffect(() => {
+    if (isOpen && date) {
+      form.reset({
+        applianceId: "",
+        date: format(date, "yyyy-MM-dd"),
+        time: format(date, "HH:mm"),
+        durationHours: "3",
+        durationMinutes: "0",
+      });
+    }
+  }, [isOpen, date, form]);
 
   const formValues = form.watch();
   const {
