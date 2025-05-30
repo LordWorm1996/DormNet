@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/utils/db";
-import { authorizeAdmin } from "@/lib/auth";
-import User from "@/models/User";
+import { connectDB } from "@utils/db";
+import { authorizeAdmin } from "@lib/auth";
+import User from "@models/User";
 
 export async function POST(
   request: Request,

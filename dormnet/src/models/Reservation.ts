@@ -1,17 +1,15 @@
-// src/models/reservation.ts
-
 import mongoose, { Schema } from "mongoose";
 
 const ReservationSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User", // ✅ this must match your User model name
+      ref: "User",
       required: true,
     },
     appliance: {
       type: Schema.Types.ObjectId,
-      ref: "Appliance", // ✅ this must match your Appliance model name
+      ref: "Appliance",
       required: true,
     },
     startTime: { type: Date, required: true },
@@ -25,7 +23,6 @@ const ReservationSchema = new Schema(
   { timestamps: true },
 );
 
-// Export model
 const Reservation =
   mongoose.models.Reservation ||
   mongoose.model("Reservation", ReservationSchema);

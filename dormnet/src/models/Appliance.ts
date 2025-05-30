@@ -1,4 +1,3 @@
-// src/models/appliance.ts
 import mongoose, { Schema } from "mongoose";
 
 const ApplianceSchema = new Schema(

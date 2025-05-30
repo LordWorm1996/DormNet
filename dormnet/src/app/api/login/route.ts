@@ -25,6 +25,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (user.role === "banned") {
+      return NextResponse.json(
+        { message: "Your account has been banned. Please contact support." },
+        { status: 403 },
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return NextResponse.json(
