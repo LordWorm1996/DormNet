@@ -1,4 +1,3 @@
-// src/app/api/admin/users/route.ts
 import { NextResponse } from "next/server";
 import { connectDB } from "@utils/db";
 import { authorizeAdmin } from "@lib/auth";
