@@ -4,14 +4,14 @@ import useSWR from "swr";
 
 interface Stats {
   userCount: number;
-  ApplianceCount: number;
-  activeReservations: number;
+  applianceCount: number;
+  reservationCount: number;
 }
 
 const fetchWithCredentials = async (url: string): Promise<Stats> => {
   const res = await fetch(url, { credentials: "include" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json() as Promise<Stats>;
+  return (await res.json()) as Stats;
 };
 
 export default function AdminDashboardPage() {
@@ -33,11 +33,11 @@ export default function AdminDashboardPage() {
         </div>
         <div className="p-4 bg-white rounded shadow">
           <h2 className="text-lg font-medium">Appliances</h2>
-          <p className="text-3xl">{data.ApplianceCount}</p>
+          <p className="text-3xl">{data.applianceCount}</p>
         </div>
         <div className="p-4 bg-white rounded shadow">
           <h2 className="text-lg font-medium">Active Reservations</h2>
-          <p className="text-3xl">{data.activeReservations}</p>
+          <p className="text-3xl">{data.reservationCount}</p>
         </div>
       </div>
     </div>

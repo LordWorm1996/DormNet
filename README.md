@@ -76,7 +76,7 @@ Practice Enterprise Project for the Thomas More Univercity. We are trying to dev
 4. Run `.\target\release\installer.exe`
 5. Paste your MongoDB URI that you can get from MongoDB -> Connect -> Connect your Application, it should look like this `mongodb+srv://<db_username>:<db_password>@practice-enterprise.19ref.mongodb.net/?retryWrites=true&w=majority&appName=yourDB` and replace `<db_username>:<db_password>` with your username and password
 6. Wait for the intsallation to finish
-7. Now your DormNet will be accessible throught `http://host_ip:3000` and will be running on startup as a NSSM service on your Windows Server
+7. Now your DormNet will be accessible throught `http://host_ip:3000` and will be running on startup as an NSSM service on your Windows Server
 8. Optional but reccomended reboot
 
 ## Troubleshoot

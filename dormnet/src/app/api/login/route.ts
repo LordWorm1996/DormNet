@@ -36,6 +36,7 @@ export async function POST(request: Request) {
     await createSession({
       id: user._id.toString(),
       email: user.email,
+      role: user.role,
     });
 
     return NextResponse.json({ success: true }, { status: 200 });

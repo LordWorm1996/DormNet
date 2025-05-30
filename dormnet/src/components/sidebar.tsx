@@ -1,17 +1,43 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Calendar, Settings, LogOut, Home, Server } from "lucide-react";
 import { LogoFullLink } from "@ui/shared";
+import { useEffect, useState } from "react";
+
+interface SessionData {
+  user?: {
+    id: string;
+    email: string;
+    role: string;
+  };
+}
 
 export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const [session, setSession] = useState<SessionData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleLogout = () => {
-    router.push("/login");
-  };
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const response = await fetch("/api/session", {
+          credentials: "include",
+        });
+        const data = await response.json();
+        setSession(data);
+      } catch (error) {
+        console.error("Failed to fetch session:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSession();
+  }, []);
+
+  const isAdmin = session?.user?.role === "admin";
 
   const navItems = [
     {
@@ -29,12 +55,28 @@ export function Sidebar() {
       href: "/settings",
       icon: <Settings className="h-4 w-4" />,
     },
-    {
-      name: "Admin Panel",
-      href: "/admin",
-      icon: <Server className="h-4 w-4" />,
-    },
+    ...(isAdmin
+      ? [
+          {
+            name: "Admin Panel",
+            href: "/admin",
+            icon: <Server className="h-4 w-4" />,
+          },
+        ]
+      : []),
   ];
+
+  if (isLoading) {
+    return (
+      <div className="hidden border-r bg-muted/40 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+            <LogoFullLink />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="hidden border-r bg-muted/40 md:block">
@@ -61,15 +103,17 @@ export function Sidebar() {
           </nav>
         </div>
         <div className="mt-auto p-4">
-          <Button
-            size="sm"
-            className="w-full"
-            onClick={handleLogout}
-            variant="ghost"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
+          <form action="/api/logout" method="POST">
+            <Button
+              type="submit"
+              size="sm"
+              className="w-full pt-4"
+              variant="ghost"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
+          </form>
         </div>
       </div>
     </div>

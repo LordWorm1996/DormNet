@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/utils/db";
-import { authorizeAdmin } from "@/lib/auth";
-import User from "@/models/User";
+import { connectDB } from "@utils/db";
+import { authorizeAdmin } from "@lib/auth";
+import User from "@models/User";
 
 export async function POST(
   request: Request,
@@ -12,14 +12,14 @@ export async function POST(
   const { id } = await params;
 
   await connectDB();
+
   const user = await User.findById(id);
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-  user.role = "admin";
+
+  user.role = "user";
   await user.save();
 
-  return NextResponse.json({
-    message: `User ${id} has been promoted to admin`,
-  });
+  return NextResponse.json({ message: `User ${id} demoted to user` });
 }
