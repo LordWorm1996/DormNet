@@ -32,12 +32,14 @@ interface MakeReservationModalProps {
   isOpen: boolean;
   onCloseAction: () => void;
   date: Date | null;
+  preselectedApplianceId?: string | null;
 }
 
 export function MakeReservationModal({
   isOpen,
   onCloseAction,
   date,
+  preselectedApplianceId,
 }: MakeReservationModalProps) {
   const [appliances, setAppliances] = useState<IAppliance[]>([]);
   const [conflictStatus, setConflictStatus] = useState<
@@ -49,7 +51,7 @@ export function MakeReservationModal({
   const form = useForm<z.infer<typeof reservationFormSchema>>({
     resolver: zodResolver(reservationFormSchema),
     defaultValues: {
-      applianceId: "",
+      applianceId: preselectedApplianceId ?? "",
       date: date ? format(date, "yyyy-MM-dd") : format(now, "yyyy-MM-dd"),
       time: date ? format(date, "HH:mm") : format(now, "HH:mm"),
       durationHours: "3",

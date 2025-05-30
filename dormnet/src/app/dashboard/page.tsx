@@ -15,8 +15,9 @@ import {
 } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { IReservation } from "@/shared/interfaces";
+import { IReservation, IAppliance } from "@/shared/interfaces";
 import { cn } from "@/lib/utils";
+import { MakeReservationModal } from "@/components/modals/make-reservation-modal";
 
 export default function DashboardReservationsCard() {
   const [weekStart, setWeekStart] = useState(
@@ -25,6 +26,12 @@ export default function DashboardReservationsCard() {
   const [reservations, setReservations] = useState<IReservation[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [userReservations, setUserReservations] = useState<IReservation[]>([]);
+  const [appliances, setAppliances] = useState<IAppliance[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedApplianceId, setSelectedApplianceId] = useState<string | null>(
+    null,
+  );
+  const [reservationDate, setReservationDate] = useState<Date | null>(null);
 
   const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
   const days = Array.from(
@@ -56,7 +63,6 @@ export default function DashboardReservationsCard() {
 
   const fetchUserReservations = () => {
     const today = startOfDay(new Date());
-
     const filtered = reservations.filter(
       (res) =>
         res.user?._id === userId &&
@@ -64,7 +70,6 @@ export default function DashboardReservationsCard() {
           (isAfter(new Date(res.startTime), today) &&
             isBefore(new Date(res.startTime), addDays(today, 4)))),
     );
-
     setUserReservations(filtered);
   };
 
@@ -78,9 +83,20 @@ export default function DashboardReservationsCard() {
     }
   };
 
+  const fetchAppliances = async () => {
+    try {
+      const res = await fetch("/api/appliances");
+      const data = await res.json();
+      setAppliances(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to fetch appliances", err);
+    }
+  };
+
   useEffect(() => {
     fetchReservations();
     fetchSession();
+    fetchAppliances();
   }, [weekStart]);
 
   useEffect(() => {
@@ -89,6 +105,7 @@ export default function DashboardReservationsCard() {
 
   return (
     <>
+      {/* Weekly Reservations Card */}
       <Card className="w-full shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Weekly Reservations</CardTitle>
@@ -122,7 +139,6 @@ export default function DashboardReservationsCard() {
                   start <= new Date(day.setHours(23, 59, 59, 999))
                 );
               });
-
               return (
                 <div
                   key={day.toISOString()}
@@ -141,10 +157,7 @@ export default function DashboardReservationsCard() {
                           res.user?._id === userId &&
                             "border-2 border-blue-600 bg-blue-200 font-semibold",
                         )}
-                        title={`${res.appliance.name} | ${format(
-                          new Date(res.startTime),
-                          "HH:mm",
-                        )} - ${format(new Date(res.endTime), "HH:mm")}`}
+                        title={`${res.appliance.name} | ${format(new Date(res.startTime), "HH:mm")} - ${format(new Date(res.endTime), "HH:mm")}`}
                       >
                         {format(new Date(res.startTime), "HH:mm")} -{" "}
                         {res.appliance.name}
@@ -161,6 +174,7 @@ export default function DashboardReservationsCard() {
         </CardContent>
       </Card>
 
+      {/* User's Upcoming Reservations */}
       <Card className="w-full mt-6 shadow-md">
         <CardHeader>
           <CardTitle>Your Upcoming Reservations</CardTitle>
@@ -196,6 +210,44 @@ export default function DashboardReservationsCard() {
           )}
         </CardContent>
       </Card>
+
+      {/* Appliances List */}
+      <Card className="w-full mt-6 shadow-md">
+        <CardHeader>
+          <CardTitle>All Appliances</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {appliances.length === 0 ? (
+            <p className="text-sm text-gray-500">No appliances available.</p>
+          ) : (
+            appliances.map((appliance) => (
+              <div
+                key={appliance._id}
+                className="flex justify-between items-center border p-2 rounded bg-white shadow-sm"
+              >
+                <div className="font-medium text-sm">{appliance.name}</div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setSelectedApplianceId(appliance._id);
+                    setReservationDate(new Date());
+                    setModalOpen(true);
+                  }}
+                >
+                  Make Reservation
+                </Button>
+              </div>
+            ))
+          )}
+        </CardContent>
+      </Card>
+
+      <MakeReservationModal
+        isOpen={modalOpen}
+        onCloseAction={() => setModalOpen(false)}
+        date={reservationDate}
+        preselectedApplianceId={selectedApplianceId}
+      />
     </>
   );
 }
