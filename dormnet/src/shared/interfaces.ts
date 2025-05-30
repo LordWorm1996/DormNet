@@ -8,6 +8,7 @@ export interface IAppliance {
   updatedAt: string;
 }
 export interface IUser {
+  _id: string;
   name: string;
   email: string;
 }
