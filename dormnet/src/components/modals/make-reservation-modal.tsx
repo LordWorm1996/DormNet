@@ -23,16 +23,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { IAppliance } from "@/shared/interfaces";
 import { reservationFormSchema } from "@/schema/reservation-form-schema";
+import { cn } from "@/lib/utils";
 
 interface MakeReservationModalProps {
   isOpen: boolean;
@@ -46,6 +40,10 @@ export function MakeReservationModal({
   date,
 }: MakeReservationModalProps) {
   const [appliances, setAppliances] = useState<IAppliance[]>([]);
+  const [conflictStatus, setConflictStatus] = useState<
+    "unknown" | "free" | "conflict"
+  >("unknown");
+
   const now = new Date();
 
   const form = useForm<z.infer<typeof reservationFormSchema>>({
@@ -59,21 +57,54 @@ export function MakeReservationModal({
     },
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      fetch("/api/appliances")
-        .then((res) => res.json())
-        .then(setAppliances);
-    }
-  }, [isOpen]);
-
   const formValues = form.watch();
   const {
+    applianceId,
     date: selectedDate,
     time,
     durationHours,
     durationMinutes,
   } = formValues;
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch("/api/appliances")
+        .then((res) => res.json())
+        .then(setAppliances)
+        .catch(() => setAppliances([]));
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!applianceId || !selectedDate || !time) {
+      setConflictStatus("unknown");
+      return;
+    }
+
+    const checkConflict = async () => {
+      const start = new Date(`${selectedDate}T${time}`);
+      const durationH = parseInt(durationHours || "0");
+      const durationM = parseInt(durationMinutes || "0");
+
+      const end = new Date(
+        start.getTime() + (durationH * 60 + durationM) * 60000,
+      );
+
+      try {
+        const res = await fetch(
+          `/api/bookings/conflict?applianceId=${applianceId}&startTime=${start.toISOString()}&endTime=${end.toISOString()}`,
+        );
+        const data = await res.json();
+        setConflictStatus(
+          Array.isArray(data) && data.length > 0 ? "conflict" : "free",
+        );
+      } catch {
+        setConflictStatus("unknown");
+      }
+    };
+
+    checkConflict();
+  }, [applianceId, selectedDate, time, durationHours, durationMinutes]);
 
   const computedEndTime = (() => {
     try {
@@ -100,7 +131,7 @@ export function MakeReservationModal({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        appliance: values.applianceId, // note: your backend expects "Appliance"
+        appliance: values.applianceId,
         startTime,
         endTime,
       }),
@@ -109,60 +140,64 @@ export function MakeReservationModal({
     if (response.ok) {
       onCloseAction();
       form.reset();
+      setConflictStatus("unknown");
     } else {
       alert("Reservation failed.");
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onCloseAction()}>
-      <DialogContent
-        className="sm:max-w-lg bg-white shadow-md"
-        style={{
-          backgroundColor: "white", // ensure background isn't dark
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // subtle shadow
-        }}
-      >
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open: boolean) => {
+        if (!open) onCloseAction();
+      }}
+    >
+      <DialogContent className="sm:max-w-lg bg-white shadow-md">
         <DialogHeader>
           <DialogTitle>Make a Reservation</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Appliance */}
+            {/* Appliance Selection */}
             <FormField
               control={form.control}
               name="applianceId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Appliance</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select appliance" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
+                  <FormControl>
+                    <select
+                      value={field.value}
+                      onChange={field.onChange}
+                      className="w-full border rounded px-3 py-2 text-sm"
+                    >
+                      <option value="">Select appliance</option>
                       {appliances.map((appliance) => (
-                        <SelectItem key={appliance._id} value={appliance._id}>
-                          <div className="flex justify-between items-center">
-                            <span>{appliance.name}</span>
-                            <span
-                              className={`ml-2 w-2 h-2 rounded-full ${
-                                appliance.status === "in-use"
-                                  ? "bg-red-500"
-                                  : "bg-green-500"
-                              }`}
-                            />
-                          </div>
-                        </SelectItem>
+                        <option key={appliance._id} value={appliance._id}>
+                          {appliance.name}
+                        </option>
                       ))}
-                    </SelectContent>
-                  </Select>
+                    </select>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Conflict Indicator - Always Visible */}
+            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Status:</span>
+              <span
+                className={cn(
+                  "w-2 h-2 rounded-full",
+                  conflictStatus === "free" && "bg-green-500",
+                  conflictStatus === "conflict" && "bg-red-500",
+                  conflictStatus === "unknown" && "bg-gray-400",
+                )}
+              />
+            </div>
 
             {/* Date + Time */}
             <div className="grid grid-cols-2 gap-4">

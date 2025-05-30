@@ -75,7 +75,7 @@ export function DayDetailsCard({
                   {format(new Date(reservation.endTime), "HH:mm")}
                 </p>
                 <p className="text-xs text-gray-500">
-                  User: {reservation.user.name}
+                  User: {reservation.user?.name || "Unknown"}
                 </p>
               </div>
             ))

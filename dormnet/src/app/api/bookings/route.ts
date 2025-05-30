@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Reservation from "@/models/Reservation";
 import "@/models/User";
+import "@/models/Appliance";
 
 import { connectDB } from "@/utils/db";
 import mongoose from "mongoose";
