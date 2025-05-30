@@ -1,6 +1,5 @@
-// src/lib/auth.ts
 import { NextResponse } from "next/server";
-import { getSession }    from "@/lib/session";
+import { getSession } from "@lib/session";
 
 export async function authorizeAdmin() {
   const { user } = await getSession();
@@ -10,6 +9,4 @@ export async function authorizeAdmin() {
   if (user.role !== "admin") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  // no error → proceed
 }
-

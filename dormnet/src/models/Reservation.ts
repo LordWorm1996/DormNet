@@ -1,4 +1,3 @@
-// src/models/Reservation.ts
 import mongoose from "mongoose";
 
 const ReservationSchema = new mongoose.Schema(
