@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Folder,
@@ -11,7 +11,7 @@ import {
   Home,
   Server,
 } from "lucide-react";
-import { LogoFullLink } from "@/components/ui/shared";
+import { LogoFullLink } from "@ui/shared";
 
 export function Sidebar() {
   const pathname = usePathname();

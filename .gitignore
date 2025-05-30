@@ -44,3 +44,7 @@ next-env.d.ts
 #cargo stuff
 /target/
 /target
+
+#jetbrains stuff
+/.github/
+/.idea/

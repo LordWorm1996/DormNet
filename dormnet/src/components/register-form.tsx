@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { Button } from "@ui/button";
 import {
   Form,
   FormControl,
@@ -9,9 +9,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { registerFormSchema } from "@/schema/register-form-schema";
+} from "@ui/form";
+import { Input } from "@ui/input";
+import { registerFormSchema } from "@schema/register-form-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -51,19 +51,19 @@ export function RegisterForm() {
           email: values.email,
           password: values.password,
         }),
-        credentials: "include", // Important for session cookies
       });
 
+      const data = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        const errorData = await response.json();
         throw new Error(
-          errorData.message ||
-            errorData.errors?.join(", ") ||
+          data.message ||
+            data.error ||
+            data.errors?.join(", ") ||
             "Registration failed. Please try again.",
         );
       }
 
-      // Registration successful - redirect to login
       router.push("/login?registered=true");
     } catch (err) {
       setError(

@@ -1,16 +1,16 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn } from "@lib/utils";
+import { Button } from "@ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@ui/card";
+import { Input } from "@ui/input";
+import { Label } from "@ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -31,27 +31,26 @@ export function LoginForm({
 
     try {
       const response = await fetch("/api/login", {
-        // Updated endpoint to match Next.js API route
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // Important for session cookies
+        credentials: "include",
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        const data = await response.json().catch(() => ({}));
+        throw new Error(
+          data.message || data.error || "Login failed. Please try again.",
+        );
       }
 
-      // Redirect to dashboard after successful login
       router.push("/dashboard");
-      // Optional: force refresh to ensure session is loaded
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -77,6 +76,7 @@ export function LoginForm({
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -95,6 +95,7 @@ export function LoginForm({
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
                   />
                 </div>
                 {error && (

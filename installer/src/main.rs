@@ -1,7 +1,7 @@
 use colored::Colorize;
 use dialoguer::{Confirm, Input};
+use local_ip_address::local_ip;
 use os_info;
-use random_string::generate;
 use std::fs::{self, File};
 use std::io::Write;
 use std::process::Command;
@@ -30,7 +30,6 @@ fn main() {
     });
 
     mongo_uri(&mut env_file);
-    session_password(&mut env_file);
     next_build();
 
     let info = os_info::get();
@@ -90,6 +89,17 @@ fn main() {
             std::process::exit(1);
         }
     }
+
+    let my_local_ip = local_ip().unwrap().to_string();
+    println!(
+        "{}{}{}",
+        "Installation complete. DormNet runs at: "
+            .bold()
+            .green()
+            .to_string(),
+        my_local_ip.bold().green(),
+        ":3000".bold().green().to_string()
+    );
 }
 
 fn cleanup_env_file() {
@@ -197,21 +207,6 @@ fn mongo_uri(env_file: &mut File) {
         cleanup_env_file();
         std::process::exit(1);
     });
-}
-
-fn session_password(env_file: &mut File) {
-    println!(
-        "{}",
-        "Generating Session Password...".bold().yellow().to_string()
-    );
-    let charset = "abcdefghijklmnopqrstuvwsyz1234567890!@#$%^&*()";
-    let session_password: String = generate(32, charset);
-    writeln!(env_file, "SESSION_PASSWORD={}", session_password).unwrap_or_else(|e| {
-        println!("Error writing to .env: {}", e);
-        cleanup_env_file();
-        std::process::exit(1);
-    });
-    println!("{}", "Generated Successfully!".green().to_string());
 }
 
 fn next_build() {

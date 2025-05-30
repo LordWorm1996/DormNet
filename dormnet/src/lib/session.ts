@@ -1,55 +1,51 @@
-import { getIronSession, SessionOptions } from "iron-session";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { IncomingMessage, ServerResponse } from "http";
 import { cookies } from "next/headers";
 
-export interface SessionData {
-  user?: {
-    id: string;
-    email: string;
-  };
-}
+const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days in seconds
+const SESSION_UPDATE_AGE = 24 * 60 * 60; // Update session daily if active
 
-export const sessionOptions: SessionOptions = {
-  password: process.env.SESSION_PASSWORD as string,
-  cookieName: "myapp_session",
-  cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-  },
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: false, // Disable for HTTP local network
+  sameSite: "lax" as const, // Or "none" if needed
+  path: "/",
+  maxAge: SESSION_MAX_AGE,
+  domain: "", // Empty string allows IP access
 };
 
-// For Pages Router (API routes and getServerSideProps)
-export function getSession(
-  req:
-    | NextApiRequest
-    | (IncomingMessage & { cookies: Partial<{ [key: string]: string }> }),
-  res: NextApiResponse | ServerResponse,
-) {
-  return getIronSession<SessionData>(
-    req as NextApiRequest,
-    res as NextApiResponse,
-    sessionOptions,
-  );
+interface SessionUser {
+  id: string;
+  email: string;
+  lastActive?: number;
 }
 
-// For App Router (Server Components)
-export async function getAppSession() {
-  const cookieStore = cookies();
+interface SessionData {
+  user?: SessionUser;
+}
 
-  const session = await getIronSession<SessionData>(
-    {
-      headers: {
-        cookie: cookieStore.toString(),
-      },
-      url: "",
-    } as unknown as NextApiRequest,
-    {
-      getHeader: () => undefined,
-      setHeader: () => undefined,
-    } as unknown as NextApiResponse,
-    sessionOptions,
-  );
+export async function getSession(): Promise<SessionData> {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
+  if (!session) return {};
 
-  return session;
+  const data: SessionData = JSON.parse(session);
+
+  if (
+    data.user?.lastActive &&
+    Date.now() - data.user.lastActive < SESSION_UPDATE_AGE * 1000
+  ) {
+    data.user.lastActive = Date.now();
+    cookieStore.set("session", JSON.stringify(data), COOKIE_OPTIONS);
+  }
+
+  return data;
+}
+
+export async function createSession(user: SessionUser): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set("session", JSON.stringify({ user }), COOKIE_OPTIONS);
+}
+
+export async function destroySession(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete("session");
 }

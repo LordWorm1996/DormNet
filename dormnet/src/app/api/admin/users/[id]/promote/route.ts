@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/lib/mongodb";
-import { authorizeAdmin } from "@/lib/auth";
-import User from "@/models/User";
+import { connectDB } from "@utils/db";
+import { authorizeAdmin } from "@lib/auth";
+import User from "@models/User";
 
 export async function POST(
   req: NextRequest,
@@ -11,7 +11,7 @@ export async function POST(
   const authResult = authorizeAdmin(req);
   if (authResult instanceof NextResponse) return authResult;
 
-  await connect();
+  await connectDB();
 
   const user = await User.findById(id);
   if (!user) {
