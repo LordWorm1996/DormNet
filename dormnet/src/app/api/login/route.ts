@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       );
     }
 
-    createSession({
+    await createSession({
       id: user._id.toString(),
       email: user.email,
     });
