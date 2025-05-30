@@ -79,14 +79,6 @@ Practice Enterprise Project for the Thomas More Univercity. We are developing a 
 7. Now your DormNet will be accessible throught `http://host_ip:3000` and will be running on startup as an NSSM service on your Windows Server
 8. Optional but reccomended reboot
 
-## Troubleshoot
-
-- If you're on Debian 12 or older you need to install rustup's latest version from the web because the apt cargo package is outdated `https://rustup.rs/` and run `rustup update` and `source $HOME/.cargo` (not tested on newer versions but if you get messages like cargo is out of date then install rustup from the web)
-- If you're on Arch this issue is not revelant as they are always up to date
-- As of this moment minimal testing has been done on Windows if you experience errors on file writing make sure you run the installer as an Admin, if you get other issues for now you are on your own
-- If you enter `http://host_ip:3000` and nothing pops up make sure that you're not using the port 3000 for something else, Nxt.js will default to 3001, but if you check the service status `systemctl status dormnet` you should see the IP and Port it runs on (ONLY ON LOCAL HOST THE IP IS DESPLAYED AT THE END OF THE INSTALLTION, ITS THE IP OF THE MACHINE YOU INSTALLED IT INTO YOU SHOULD KNOW IT)
-- There is no admin role by default, inform your supervisor to edit the database and assign the role `admin` to one person
-
 ## Uninstallation
 1. Move into the Uninstaller directory `cd DormNet/uninstaller`
 2. Run `cargo build --release`
@@ -94,3 +86,11 @@ Practice Enterprise Project for the Thomas More Univercity. We are developing a 
 4. This should remove the service and the .env file
 5. After that delete the DormNet cloned repo manually as the Uninstaller cannot delete itself!!!
 6. Reboot
+
+## Troubleshoot
+
+- If you're on Debian 12 or older you need to install rustup's latest version from the web because the apt cargo package is outdated `https://rustup.rs/` and run `rustup update` and `source $HOME/.cargo` (not tested on newer versions but if you get messages like cargo is out of date then install rustup from the web)
+- If you're on Arch this issue is not revelant as they are always up to date
+- As of this moment minimal testing has been done on Windows if you experience errors on file writing make sure you run the installer as an Admin, if you get other issues for now you are on your own
+- If you enter `http://host_ip:3000` and nothing pops up make sure that you're not using the port 3000 for something else, Nxt.js will default to 3001, but if you check the service status `systemctl status dormnet` you should see the IP and Port it runs on (ONLY ON LOCAL HOST THE IP IS DESPLAYED AT THE END OF THE INSTALLTION, ITS THE IP OF THE MACHINE YOU INSTALLED IT INTO YOU SHOULD KNOW IT)
+- There is no admin role by default, inform your supervisor to edit the database and assign the role `admin` to one person
