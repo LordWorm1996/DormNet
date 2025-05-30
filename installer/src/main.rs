@@ -9,7 +9,7 @@ use std::process::Command;
 fn main() {
     println!(
         "{}",
-        "Welcome to the DormNet Installer for your Appliance"
+        "Welcome to the DormNet Installer for your Server"
             .green()
             .bold()
             .to_string()
