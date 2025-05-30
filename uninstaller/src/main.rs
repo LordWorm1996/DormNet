@@ -7,7 +7,7 @@ use std::process::Command;
 fn main() {
     println!(
         "{}",
-        "Welcome to the DormNet Uninstaller for your Appliance"
+        "Welcome to the DormNet Uninstaller for your Server"
             .green()
             .bold()
             .to_string()
