@@ -1,20 +1,19 @@
 import { cookies } from "next/headers";
 
-const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days in seconds
+const SESSION_MAX_AGE = 24 * 60 * 60 * 30; // 30 days
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: false, // Disable for HTTP local network
-  sameSite: "lax" as const, // Or "none" if needed
+  secure: false,
+  sameSite: "lax" as const,
   path: "/",
   maxAge: SESSION_MAX_AGE,
-  domain: "", // Empty string allows IP access
+  domain: "",
 };
 
 interface SessionUser {
   id: string;
   email: string;
-  lastActive?: number;
 }
 
 interface SessionData {
