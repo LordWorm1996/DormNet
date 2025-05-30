@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days in seconds
-const SESSION_UPDATE_AGE = 24 * 60 * 60; // Update session daily if active
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -25,19 +24,7 @@ interface SessionData {
 export async function getSession(): Promise<SessionData> {
   const cookieStore = await cookies();
   const session = cookieStore.get("session")?.value;
-  if (!session) return {};
-
-  const data: SessionData = JSON.parse(session);
-
-  if (
-    data.user?.lastActive &&
-    Date.now() - data.user.lastActive < SESSION_UPDATE_AGE * 1000
-  ) {
-    data.user.lastActive = Date.now();
-    cookieStore.set("session", JSON.stringify(data), COOKIE_OPTIONS);
-  }
-
-  return data;
+  return session ? JSON.parse(session) : {};
 }
 
 export async function createSession(user: SessionUser): Promise<void> {
